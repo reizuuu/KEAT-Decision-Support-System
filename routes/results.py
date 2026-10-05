@@ -2,7 +2,6 @@ from flask import Blueprint, jsonify, request
 
 from models import Rules
 from services.aggregation import build_dashboard_payload
-from services.auth import api_login_required
 from services.cache import get_or_build
 from services.persistence import (
     build_analytics_browse_payload,
@@ -16,7 +15,6 @@ results_bp = Blueprint("results", __name__)
 
 
 @results_bp.get("/api/results")
-@api_login_required
 def get_results():
     """Dashboard data for the given filters. Analytics has its own endpoint
     (/api/analytics) so neither page pays for the other's data.
@@ -39,7 +37,6 @@ def get_results():
 
 
 @results_bp.get("/api/analytics")
-@api_login_required
 def get_analytics():
     """Analytics page data - always the full accumulated dataset, never the
     dashboard filters.
@@ -54,7 +51,6 @@ def get_analytics():
 
 
 @results_bp.get("/api/analytics/status")
-@api_login_required
 def get_analytics_status():
     """Cheap poll target for the Analytics page's "recalculating" badge -
     just whether any Rules row is still flagged is_approximate (stale

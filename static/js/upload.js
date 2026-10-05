@@ -245,12 +245,6 @@ function buildUploadSuccessMessage(payload) {
     return message;
 }
 
-function escapeHtml(value) {
-    const div = document.createElement('div');
-    div.textContent = value == null ? '' : String(value);
-    return div.innerHTML;
-}
-
 function closeUploadSuccess() {
     closeModal('uploadSuccessModal');
 

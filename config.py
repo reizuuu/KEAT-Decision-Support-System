@@ -21,6 +21,7 @@ MASTER_CATALOG_DIR = os.path.join(INSTANCE_DIR, "master_catalog")
 # with a key that's checked into source control.
 SECRET_KEY = os.environ.get("KEAT_SECRET_KEY", "dev-secret-key-change-in-production")
 
-MIN_CONFIDENCE = 0.2
 MIN_SUPPORT = 0.003
-MIN_LIFT = 1.2
+MIN_LIFT = 2
+MIN_LEVERAGE = 0.0015
+MIN_CONVICTION = 1.05

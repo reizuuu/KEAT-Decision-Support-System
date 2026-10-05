@@ -126,12 +126,6 @@ function renderProductTable() {
     initializeProductActions();
 }
 
-function escapeHtml(value) {
-    const div = document.createElement('div');
-    div.textContent = value == null ? '' : String(value);
-    return div.innerHTML;
-}
-
 function initializeProductModal() {
     const addProductBtn = document.getElementById('addProductBtn');
     const productForm = document.getElementById('productForm');

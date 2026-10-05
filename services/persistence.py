@@ -1,4 +1,3 @@
-import math
 import threading
 from decimal import Decimal
 from pathlib import Path
@@ -10,6 +9,7 @@ from sqlalchemy import func, tuple_
 from config import MASTER_CATALOG_DIR
 from models import Category, Products, RawTransaction, RuleItems, Rules, TransactionStatistics, db
 from services.mining import RANKING_METRICS, compute_rules, rank_rules
+from services.numbers import json_number
 from services.text import normalize_alias, to_title_case
 
 
@@ -734,18 +734,8 @@ def build_rule_bundles_payload():
     rank_rules(bundles)
     for bundle in bundles:
         for metric in RANKING_METRICS:
-            bundle[metric] = _safe_number(bundle[metric])
+            bundle[metric] = json_number(bundle[metric], whole_as_int=False)
     return bundles
-
-
-def _safe_number(value):
-    numeric_value = float(value)
-    if math.isnan(numeric_value) or math.isinf(numeric_value):
-        # e.g. conviction is infinite whenever a rule's confidence is
-        # exactly 1.0 - Python's json module would otherwise emit the
-        # non-standard "Infinity" token, which browsers reject.
-        return None
-    return numeric_value
 
 
 # ---------------------------------------------------------------------------

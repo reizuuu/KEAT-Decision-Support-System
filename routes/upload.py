@@ -4,7 +4,6 @@ from datetime import datetime
 from flask import Blueprint, current_app, jsonify, request
 
 from models import UploadLog, db
-from services.auth import api_login_required
 from services.parsing import MissingColumnsError, read_and_clean_upload
 from services.persistence import (
     apply_master_pricing,
@@ -21,7 +20,6 @@ upload_bp = Blueprint("upload", __name__)
 
 
 @upload_bp.post("/api/upload")
-@api_login_required
 def upload_file():
     uploaded_file = request.files.get("file")
     if uploaded_file is None or not uploaded_file.filename:

@@ -64,7 +64,7 @@ async function initializeAnalyticsPage() {
     await loadAnalyticsData();
     wireControls();
     wireBundlesControls();
-    wirePrintReportButton();
+    wirePrintReportButton(printAnalyticsReport);
     showLevel1();
 }
 
@@ -269,12 +269,6 @@ function hideSearchDropdown() {
 function selectSearchResult(productName) {
     hideSearchDropdown();
     showLevel3(productName, null);
-}
-
-function escapeHtml(value) {
-    const div = document.createElement('div');
-    div.textContent = value == null ? '' : String(value);
-    return div.innerHTML;
 }
 
 // ====================================
@@ -655,12 +649,6 @@ function updateBundlesSortIndicators() {
 
 const PRINT_NO_ROWS_REASON = 'No rows match the current filters.';
 const APPROXIMATE_FOOTNOTE = '~ Approximate value, currently being recalculated';
-
-function wirePrintReportButton() {
-    const button = document.getElementById('printReportBtn');
-    if (!button) return;
-    button.addEventListener('click', printAnalyticsReport);
-}
 
 // Called at the top of every render function (and on tab switches): by the
 // time a render runs, the state it depends on is already final, and those

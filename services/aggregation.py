@@ -1,4 +1,4 @@
-import math
+from services.numbers import json_number
 
 
 def build_dashboard_payload(dataframe):
@@ -45,7 +45,7 @@ def build_dashboard_payload(dataframe):
             {
                 "label": category,
                 "data": [
-                    _number(category_month_totals.get((period, category), 0))
+                    json_number(category_month_totals.get((period, category), 0))
                     for period in month_values
                 ],
             }
@@ -59,7 +59,7 @@ def build_dashboard_payload(dataframe):
             {
                 "label": product,
                 "data": [
-                    _number(product_month_totals.get((period, product), 0))
+                    json_number(product_month_totals.get((period, product), 0))
                     for period in month_values
                 ],
             }
@@ -78,16 +78,16 @@ def build_dashboard_payload(dataframe):
     # per transaction they appear in" - still a real, meaningful number,
     # not hidden/disabled in that case.
     average_products_per_transaction = (
-        _number(dataframe["Quantity"].sum() / total_transactions) if total_transactions else 0
+        json_number(dataframe["Quantity"].sum() / total_transactions) if total_transactions else 0
     )
     # Currency counterpart of the above: total revenue / total transactions,
     # over the same already-filtered dataframe - same division-by-zero guard.
     average_sales_per_transaction = (
-        _number(dataframe["Total"].sum() / total_transactions) if total_transactions else 0
+        json_number(dataframe["Total"].sum() / total_transactions) if total_transactions else 0
     )
 
     return {
-        "totalRevenue": _number(dataframe["Total"].sum()),
+        "totalRevenue": json_number(dataframe["Total"].sum()),
         "totalTransactions": total_transactions,
         "averageProductsPerTransaction": average_products_per_transaction,
         "averageSalesPerTransaction": average_sales_per_transaction,
@@ -97,16 +97,16 @@ def build_dashboard_payload(dataframe):
         },
         "bestSelling": {
             "labels": product_totals.index.tolist(),
-            "data": [_number(value) for value in product_totals.tolist()],
+            "data": [json_number(value) for value in product_totals.tolist()],
         },
         "transactionVolume": transaction_volume,
         "revenueByCategory": {
             "labels": category_revenue.index.tolist(),
-            "data": [_number(value) for value in category_revenue.tolist()],
+            "data": [json_number(value) for value in category_revenue.tolist()],
         },
         "monthlySalesTrend": {
             "labels": month_labels,
-            "data": [_number(monthly_revenue.get(period, 0)) for period in month_values],
+            "data": [json_number(monthly_revenue.get(period, 0)) for period in month_values],
         },
         "topProductsMonthly": top_products_monthly,
         "transactionsByDayOfWeek": {
@@ -120,9 +120,3 @@ def build_dashboard_payload(dataframe):
         },
     }
 
-
-def _number(value):
-    numeric_value = float(value)
-    if math.isnan(numeric_value) or math.isinf(numeric_value):
-        return None
-    return int(numeric_value) if numeric_value.is_integer() else numeric_value

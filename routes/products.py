@@ -2,7 +2,6 @@ from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy import func
 
 from models import Category, Products, RawTransaction, db
-from services.auth import api_login_required
 from services.persistence import (
     find_product_by_name_or_alias,
     get_or_create_category,
@@ -16,7 +15,6 @@ products_bp = Blueprint("products_api", __name__)
 
 
 @products_bp.get("/api/products")
-@api_login_required
 def get_products():
     category_filters = [
         value.strip()
@@ -71,7 +69,6 @@ def get_products():
 
 
 @products_bp.get("/api/categories")
-@api_login_required
 def get_categories():
     categories = Category.query.order_by(Category.category_name).all()
     return jsonify({"categories": [category.category_name for category in categories]}), 200
@@ -95,7 +92,6 @@ def _parse_price(raw_price):
 
 
 @products_bp.post("/api/products")
-@api_login_required
 def create_product():
     data = request.get_json(silent=True) or {}
     name = (data.get("product_name") or "").strip()
@@ -181,7 +177,6 @@ def create_product():
 
 
 @products_bp.put("/api/products/<int:product_id>")
-@api_login_required
 def update_product(product_id):
     product = db.session.get(Products, product_id)
     if product is None:
@@ -243,7 +238,6 @@ def update_product(product_id):
 
 
 @products_bp.delete("/api/products/<int:product_id>")
-@api_login_required
 def delete_product(product_id):
     product = db.session.get(Products, product_id)
     if product is None:

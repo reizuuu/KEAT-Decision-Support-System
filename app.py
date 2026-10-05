@@ -12,7 +12,7 @@ from routes.products import products_bp
 from routes.results import results_bp
 from routes.upload import upload_bp
 from routes.users import users_bp
-from services.auth import current_user, enforce_login, login_required, prevent_caching
+from services.auth import current_user, enforce_login, prevent_caching
 from services.migrations import run_startup_migrations
 from services.persistence import seed_master_catalog_if_empty
 
@@ -84,22 +84,18 @@ def create_app():
         return render_template("index.html")
 
     @app.get("/dashboard")
-    @login_required
     def dashboard():
         return render_template("dashboard.html")
 
     @app.get("/analytics")
-    @login_required
     def analytics():
         return render_template("analytics.html")
 
     @app.get("/products")
-    @login_required
     def products():
         return render_template("products.html")
 
     @app.get("/upload")
-    @login_required
     def upload():
         return render_template("upload.html")
 

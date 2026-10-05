@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, session
 from werkzeug.security import check_password_hash
 
 from models import UserAccounts
-from services.auth import SESSION_USER_KEY, api_login_required, current_user
+from services.auth import SESSION_USER_KEY, current_user
 
 
 auth_bp = Blueprint("auth", __name__)
@@ -30,9 +30,6 @@ def logout():
 
 
 @auth_bp.get("/api/session")
-@api_login_required
 def get_session():
     user = current_user()
-    if user is None:
-        return jsonify({"error": "Authentication required."}), 401
     return jsonify({"username": user.username, "role": user.role}), 200

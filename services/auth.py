@@ -1,5 +1,3 @@
-from functools import wraps
-
 from flask import jsonify, redirect, request, session, url_for
 
 from models import UserAccounts, db
@@ -58,30 +56,3 @@ def prevent_caching(response):
         response.headers["Pragma"] = "no-cache"
     return response
 
-
-def login_required(view):
-    """Protects a page route - redirects anonymous visitors to the login page.
-
-    Redundant with enforce_login, kept as an explicit marker (and a second
-    line of defence) on each protected page.
-    """
-
-    @wraps(view)
-    def wrapped(*args, **kwargs):
-        if current_user() is None:
-            return _unauthenticated_response()
-        return view(*args, **kwargs)
-
-    return wrapped
-
-
-def api_login_required(view):
-    """Protects a JSON API route - returns 401 instead of redirecting."""
-
-    @wraps(view)
-    def wrapped(*args, **kwargs):
-        if current_user() is None:
-            return _unauthenticated_response()
-        return view(*args, **kwargs)
-
-    return wrapped

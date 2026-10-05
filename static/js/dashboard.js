@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function initializeDashboardPage() {
     wireTimePeriodControls();
     wireCategoryProductControls();
-    wirePrintReportButton();
+    wirePrintReportButton(printDashboardReport);
     // No filters are selected on a fresh page load, so the three requests
     // don't depend on each other - run them in parallel instead of in turn.
     await Promise.all([loadCategoryOptions(), loadProductOptions(), loadDashboardResults()]);
@@ -394,8 +394,8 @@ function renderCategoryFilterList() {
         list.innerHTML = currentCategoryOptions
             .map(name => `
                 <label class="checkbox-dropdown-item">
-                    <input type="checkbox" class="category-filter-checkbox" value="${escapeHtmlAttr(name)}" ${selectedCategories.includes(name) ? 'checked' : ''}>
-                    <span>${escapeHtmlAttr(name)}</span>
+                    <input type="checkbox" class="category-filter-checkbox" value="${escapeHtml(name)}" ${selectedCategories.includes(name) ? 'checked' : ''}>
+                    <span>${escapeHtml(name)}</span>
                 </label>
             `)
             .join('');
@@ -487,8 +487,8 @@ function renderProductFilterList() {
         list.innerHTML = visibleOptions
             .map(name => `
                 <label class="checkbox-dropdown-item">
-                    <input type="checkbox" class="product-filter-checkbox" value="${escapeHtmlAttr(name)}" ${selectedProducts.includes(name) ? 'checked' : ''}>
-                    <span>${escapeHtmlAttr(name)}</span>
+                    <input type="checkbox" class="product-filter-checkbox" value="${escapeHtml(name)}" ${selectedProducts.includes(name) ? 'checked' : ''}>
+                    <span>${escapeHtml(name)}</span>
                 </label>
             `)
             .join('');
@@ -522,12 +522,6 @@ function updateProductFilterToggleLabel() {
     } else {
         label.textContent = `${selectedProducts.length} products selected`;
     }
-}
-
-function escapeHtmlAttr(value) {
-    const div = document.createElement('div');
-    div.textContent = value == null ? '' : String(value);
-    return div.innerHTML;
 }
 
 async function loadDashboardResults() {
@@ -716,12 +710,6 @@ function buildAverageProductsTooltip(value) {
    rather than copied from the canvases. Shared building blocks (header,
    table, print/cleanup) live in script.js. */
 
-function wirePrintReportButton() {
-    const button = document.getElementById('printReportBtn');
-    if (!button) return;
-    button.addEventListener('click', printDashboardReport);
-}
-
 function printDashboardReport() {
     if (!lastDashboardResults || !lastDashboardResults.dashboard) return;
     printReportHtml(buildDashboardReportHtml(lastDashboardResults.dashboard, lastDashboardFilterLines));
@@ -847,7 +835,7 @@ function reportRound(value) {
 }
 
 function reportStrong(text) {
-    return `<strong>${escapeReportHtml(text)}</strong>`;
+    return `<strong>${escapeHtml(text)}</strong>`;
 }
 
 const REPORT_NO_DATA_TEXT = 'No data for the selected filters.';
@@ -917,7 +905,7 @@ function reportSvgText(x, y, text, options) {
     return `<text x="${reportRound(x)}" y="${reportRound(y)}" font-size="${settings.size || 11}"`
         + `${settings.anchor ? ` text-anchor="${settings.anchor}"` : ''}`
         + `${settings.weight ? ` font-weight="${settings.weight}"` : ''}`
-        + ` fill="${settings.fill || '#222'}">${escapeReportHtml(text)}</text>`;
+        + ` fill="${settings.fill || '#222'}">${escapeHtml(text)}</text>`;
 }
 
 // Month label "Aug 2025" drawn as a bold "Aug" over a lighter "2025".
@@ -965,7 +953,7 @@ function renderReportChartCard(innerHtml) {
     return `<div class="report-chart-card">${innerHtml}</div>`;
 }
 
-// html must already be safe (built from escapeReportHtml/reportStrong).
+// html must already be safe (built from escapeHtml/reportStrong).
 function renderReportChartCaption(html) {
     return `<p class="report-chart-caption">${html}</p>`;
 }
@@ -1043,7 +1031,7 @@ function buildReportHighlightsSection(dashboard, months) {
     }
 
     if (lines.length === 0) return '';
-    const list = `<ul class="report-highlights">${lines.map(line => `<li>${escapeReportHtml(line)}</li>`).join('')}</ul>`;
+    const list = `<ul class="report-highlights">${lines.map(line => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`;
     return renderReportSection('Key Highlights', list);
 }
 
@@ -1139,8 +1127,8 @@ function buildReportRevenueByCategorySection(series, categoryColors) {
             : `right:${(100 - anchorPercent).toFixed(2)}%`;
         return `
             <div class="report-pie-label report-pie-label-${label.side}" style="${position};top:${((label.y / height) * 100).toFixed(2)}%">
-                <div class="report-pie-label-name"><span class="report-swatch" style="background:${label.slice.color}"></span>${escapeReportHtml(label.slice.label)}</div>
-                <div>${escapeReportHtml(formatCurrency(label.slice.value))} <span class="report-muted">· ${escapeReportHtml(formatReportPercent(label.slice.value, total))}</span></div>
+                <div class="report-pie-label-name"><span class="report-swatch" style="background:${label.slice.color}"></span>${escapeHtml(label.slice.label)}</div>
+                <div>${escapeHtml(formatCurrency(label.slice.value))} <span class="report-muted">· ${escapeHtml(formatReportPercent(label.slice.value, total))}</span></div>
             </div>
         `;
     }).join('');
@@ -1151,7 +1139,7 @@ function buildReportRevenueByCategorySection(series, categoryColors) {
             ${labelHtml}
         </div>
     `);
-    const caption = escapeReportHtml(`Each slice is one menu category – the bigger the slice, the more money it earned. Every label shows the category, how much it earned (₱) and its share of the total ${formatCurrency(total)}.`);
+    const caption = escapeHtml(`Each slice is one menu category – the bigger the slice, the more money it earned. Every label shows the category, how much it earned (₱) and its share of the total ${formatCurrency(total)}.`);
     return renderReportSection(title, chart + renderReportChartCaption(caption));
 }
 
@@ -1188,25 +1176,25 @@ function buildBestSellingNarrative(series, totalItems) {
     const sentences = [];
 
     if (!second) {
-        sentences.push(`${reportStrong(first.label)} is the best seller with ${escapeReportHtml(formatNumber(first.units))} units.`);
+        sentences.push(`${reportStrong(first.label)} is the best seller with ${escapeHtml(formatNumber(first.units))} units.`);
     } else if (first.units === second.units) {
-        sentences.push(`${reportStrong(first.label)} and ${reportStrong(second.label)} share the top spot with ${escapeReportHtml(formatNumber(first.units))} units each.`);
+        sentences.push(`${reportStrong(first.label)} and ${reportStrong(second.label)} share the top spot with ${escapeHtml(formatNumber(first.units))} units each.`);
     } else {
         const lead = first.units - second.units;
         const leadText = `${formatNumber(lead)} unit${lead === 1 ? '' : 's'}`;
         let sentence = lead / second.units >= 0.05
-            ? `${reportStrong(first.label)} is the clear favorite with ${escapeReportHtml(formatNumber(first.units))} units, ahead of ${escapeReportHtml(second.label)} by ${escapeReportHtml(leadText)}`
-            : `${reportStrong(first.label)} is the top seller with ${escapeReportHtml(formatNumber(first.units))} units, just ahead of ${escapeReportHtml(second.label)} by ${escapeReportHtml(leadText)}`;
+            ? `${reportStrong(first.label)} is the clear favorite with ${escapeHtml(formatNumber(first.units))} units, ahead of ${escapeHtml(second.label)} by ${escapeHtml(leadText)}`
+            : `${reportStrong(first.label)} is the top seller with ${escapeHtml(formatNumber(first.units))} units, just ahead of ${escapeHtml(second.label)} by ${escapeHtml(leadText)}`;
         const ratio = first.units / last.units;
         if (items.length >= 3 && ratio >= 1.1) {
-            sentence += ` and selling about ${ratio.toFixed(1)} times as much as number ${items.length} (${escapeReportHtml(last.label)}, ${escapeReportHtml(formatNumber(last.units))} units)`;
+            sentence += ` and selling about ${ratio.toFixed(1)} times as much as number ${items.length} (${escapeHtml(last.label)}, ${escapeHtml(formatNumber(last.units))} units)`;
         }
         sentences.push(`${sentence}.`);
     }
 
     const theme = findReportNameTheme(items.map(item => item.label));
     if (theme) {
-        sentences.push(`${escapeReportHtml(theme.word)} dishes take ${theme.count} of the ${items.length} spots, so they are a reliable crowd-pleaser.`);
+        sentences.push(`${escapeHtml(theme.word)} dishes take ${theme.count} of the ${items.length} spots, so they are a reliable crowd-pleaser.`);
     }
 
     const topUnits = sumReportValues(items.map(item => item.units));
@@ -1215,7 +1203,7 @@ function buildBestSellingNarrative(series, totalItems) {
         const advice = share >= 30
             ? 'so keeping them well stocked protects a big part of sales.'
             : 'so sales are spread widely and the rest of the menu matters too.';
-        sentences.push(`Together these ${items.length} items account for ${escapeReportHtml(formatNumber(topUnits))} units – about ${share}% of the ${escapeReportHtml(formatNumber(totalItems))} items sold – ${advice}`);
+        sentences.push(`Together these ${items.length} items account for ${escapeHtml(formatNumber(topUnits))} units – about ${share}% of the ${escapeHtml(formatNumber(totalItems))} items sold – ${advice}`);
     }
     return sentences.join(' ');
 }
@@ -1346,8 +1334,8 @@ function buildReportMonthlySummarySection(revenueSeries, orderSeries) {
         + `The ${reportStrong('blue bars')} are how many orders were made – read them on the number scale on the right.`;
     if (valueFont) caption += ' The small row at the bottom is the average amount spent per order.';
     if (count > 1) {
-        caption += ` Best month: ${reportStrong(labels[best])} (${escapeReportHtml(formatReportPesoWhole(revenue[best]))}); `
-            + `quietest: ${reportStrong(labels[quietest])} (${escapeReportHtml(formatReportPesoWhole(revenue[quietest]))}).`;
+        caption += ` Best month: ${reportStrong(labels[best])} (${escapeHtml(formatReportPesoWhole(revenue[best]))}); `
+            + `quietest: ${reportStrong(labels[quietest])} (${escapeHtml(formatReportPesoWhole(revenue[quietest]))}).`;
     }
     return renderReportSection(title, chart + renderReportChartCaption(caption));
 }
@@ -1424,7 +1412,7 @@ function buildReportCategoryPerMonthSection(series, categoryOrder, categoryColor
     const legend = `<div class="report-chart-legend">${datasets.slice().reverse().map(dataset => `
         <span class="report-legend-item">
             <span class="report-swatch" style="background:${dataset.color}"></span>
-            <strong>${escapeReportHtml(dataset.label)}</strong>&nbsp;<span class="report-muted">${escapeReportHtml(formatNumber(sumReportValues(dataset.values)))}</span>
+            <strong>${escapeHtml(dataset.label)}</strong>&nbsp;<span class="report-muted">${escapeHtml(formatNumber(sumReportValues(dataset.values)))}</span>
         </span>
     `).join('')}</div>`;
     const chart = renderReportChartCard(`${legend}<svg viewBox="0 0 ${width} ${height}" aria-hidden="true">${parts.join('')}</svg>`);
@@ -1432,10 +1420,10 @@ function buildReportCategoryPerMonthSection(series, categoryOrder, categoryColor
     const topMonth = monthTotals.indexOf(maxTotal);
     let caption = 'Each bar is one month and each color is a menu category. The taller the bar, the more items were sold that month – the number on top is the month\'s total';
     caption += count > 1
-        ? ` (${reportStrong(labels[topMonth])} was highest with ${escapeReportHtml(formatNumber(maxTotal))}).`
+        ? ` (${reportStrong(labels[topMonth])} was highest with ${escapeHtml(formatNumber(maxTotal))}).`
         : '.';
     caption += ' Numbers inside the colors show how many items that category sold; thin slices are left blank.';
-    caption += ` The legend shows each category's total for ${count > 1 ? `all ${count} months` : 'the month'} (${escapeReportHtml(formatNumber(grandTotal))} items).`;
+    caption += ` The legend shows each category's total for ${count > 1 ? `all ${count} months` : 'the month'} (${escapeHtml(formatNumber(grandTotal))} items).`;
     return renderReportSection(title, chart + renderReportChartCaption(caption), 'report-section-break');
 }
 
@@ -1456,10 +1444,10 @@ function buildDayOfWeekNarrative(series) {
     let opening = '';
     if (weekendShare >= 0.47) opening = 'Business picks up toward the weekend: ';
     else if (weekendShare <= 0.39) opening = 'Business leans toward weekdays: ';
-    let first = `${opening}${reportStrong(busiest.label)} is the busiest day with ${escapeReportHtml(formatNumber(busiest.value))} transactions`;
+    let first = `${opening}${reportStrong(busiest.label)} is the busiest day with ${escapeHtml(formatNumber(busiest.value))} transactions`;
     if (quietest.value > 0 && busiest.value > quietest.value) {
         const more = Math.round((busiest.value / quietest.value - 1) * 100);
-        first += `, about ${more}% more than ${reportStrong(quietest.label)}, the quietest at ${escapeReportHtml(formatNumber(quietest.value))}`;
+        first += `, about ${more}% more than ${reportStrong(quietest.label)}, the quietest at ${escapeHtml(formatNumber(quietest.value))}`;
     }
     sentences.push(`${first}.`);
 
@@ -1469,13 +1457,13 @@ function buildDayOfWeekNarrative(series) {
     else second += ',';
     const steady = weekdayLow > 0 && (weekdayHigh - weekdayLow) / weekdayLow <= 0.15;
     second += steady
-        ? ` while Monday to Thursday stay steady at ${escapeReportHtml(formatNumber(weekdayLow))}–${escapeReportHtml(formatNumber(weekdayHigh))} each.`
-        : ` while Monday to Thursday range from ${escapeReportHtml(formatNumber(weekdayLow))} to ${escapeReportHtml(formatNumber(weekdayHigh))}.`;
+        ? ` while Monday to Thursday stay steady at ${escapeHtml(formatNumber(weekdayLow))}–${escapeHtml(formatNumber(weekdayHigh))} each.`
+        : ` while Monday to Thursday range from ${escapeHtml(formatNumber(weekdayLow))} to ${escapeHtml(formatNumber(weekdayHigh))}.`;
     sentences.push(second);
 
     sentences.push(weekendShare >= 0.45
         ? 'That makes Friday to Sunday the most important days to plan staff and stock for.'
-        : `Plan staff and stock around ${escapeReportHtml(busiest.label)}, the busiest day.`);
+        : `Plan staff and stock around ${escapeHtml(busiest.label)}, the busiest day.`);
     return sentences.join(' ');
 }
 
@@ -1569,10 +1557,10 @@ function buildReportHourOfDaySection(series, months) {
         return `
             <div class="report-hour-box${box.outside ? ' report-hour-box-outside' : ''}"${style}>
                 ${box === peak ? '<span class="report-hour-badge">Peak hour</span>' : ''}
-                <div class="report-hour-title">${escapeReportHtml(box.title)}</div>
-                <div class="report-hour-value">${escapeReportHtml(formatNumber(box.value))}</div>
-                <div class="report-hour-detail">${escapeReportHtml(share)}</div>
-                <div class="report-hour-detail">${escapeReportHtml(box.range)}</div>
+                <div class="report-hour-title">${escapeHtml(box.title)}</div>
+                <div class="report-hour-value">${escapeHtml(formatNumber(box.value))}</div>
+                <div class="report-hour-detail">${escapeHtml(share)}</div>
+                <div class="report-hour-detail">${escapeHtml(box.range)}</div>
                 ${box.outside ? `<span class="report-hour-tag">${box.outside === 'before' ? 'before opening' : 'after closing'}</span>` : ''}
             </div>
         `;
@@ -1580,10 +1568,10 @@ function buildReportHourOfDaySection(series, months) {
 
     const grid = `<div class="report-hour-grid">${shifts.map(shift => `
         <div class="report-hour-shift">
-            <div class="report-hour-shift-name">${escapeReportHtml(shift.name)}</div>
-            <div>${escapeReportHtml(shift.range)}</div>
-            <div class="report-hour-shift-strong">${escapeReportHtml(formatNumber(shift.total))} transactions</div>
-            <div class="report-hour-shift-strong report-hour-shift-share">${escapeReportHtml(formatReportPercent(shift.total, total))} of all</div>
+            <div class="report-hour-shift-name">${escapeHtml(shift.name)}</div>
+            <div>${escapeHtml(shift.range)}</div>
+            <div class="report-hour-shift-strong">${escapeHtml(formatNumber(shift.total))} transactions</div>
+            <div class="report-hour-shift-strong report-hour-shift-share">${escapeHtml(formatReportPercent(shift.total, total))} of all</div>
         </div>
         ${shift.boxes.map(renderBox).join('')}
     `).join('')}</div>`;
@@ -1598,7 +1586,7 @@ function buildReportHourOfDaySection(series, months) {
             </div>
             <div class="report-hour-legend-row">
                 <span class="report-hour-dashed-icon"></span>
-                <span>Dashed box = hours outside the ${escapeReportHtml(formatReportHour(REPORT_OPENING_HOUR))} – ${escapeReportHtml(formatReportHour(REPORT_LAST_OPEN_HOUR))} opening hours, counted with the nearest shift.</span>
+                <span>Dashed box = hours outside the ${escapeHtml(formatReportHour(REPORT_OPENING_HOUR))} – ${escapeHtml(formatReportHour(REPORT_LAST_OPEN_HOUR))} opening hours, counted with the nearest shift.</span>
             </div>
         </div>
     `;
@@ -1606,13 +1594,13 @@ function buildReportHourOfDaySection(series, months) {
     const busiestShift = shifts.reduce((best, shift) => (shift.total > best.total ? shift : best), shifts[0]);
     let period = reportStrong('totals for the selected period');
     if (months.length > 1) {
-        period = `${reportStrong(`totals for all ${months.length} months`)} (${escapeReportHtml(months[0])} – ${escapeReportHtml(months[months.length - 1])})`;
+        period = `${reportStrong(`totals for all ${months.length} months`)} (${escapeHtml(months[0])} – ${escapeHtml(months[months.length - 1])})`;
     } else if (months.length === 1) {
         period = reportStrong(`totals for ${months[0]}`);
     }
     let caption = `Each box is one hour of the day – the darker the box, the busier it was. The numbers are ${period}. `
-        + `${reportStrong(busiestShift.name)} is the busiest (${escapeReportHtml(formatReportPercent(busiestShift.total, total))} of all transactions)`;
-    if (peak) caption += ` and ${reportStrong(peak.title)} is the busiest hour (${escapeReportHtml(formatNumber(peak.value))})`;
+        + `${reportStrong(busiestShift.name)} is the busiest (${escapeHtml(formatReportPercent(busiestShift.total, total))} of all transactions)`;
+    if (peak) caption += ` and ${reportStrong(peak.title)} is the busiest hour (${escapeHtml(formatNumber(peak.value))})`;
     caption += '.';
 
     return renderReportSection(title, grid + legend + renderReportChartCaption(caption), sectionClass);
