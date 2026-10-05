@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keat - Decision Support System | Dashboard</title>
+
+    <!-- Favicons -->
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicons/favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='assets/favicons/favicon-48x48.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicons/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
+    <meta name="theme-color" content="#2c1e1d">
+
+    <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
+
+    <!-- Chart.js -->
+    <script src="{{ url_for('static', filename='vendors/chartjs/chart.min.js') }}"></script>
+
+    <!-- Flatpickr (date inputs with a locale-independent display format) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/flatpickr/flatpickr.min.css') }}">
+    <script src="{{ url_for('static', filename='vendors/flatpickr/flatpickr.min.js') }}"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo">keat</div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="{{ url_for('dashboard') }}" class="active" title="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('analytics') }}" title="Analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('products') }}" title="Products">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </a>
+                <a href="{{ url_for('upload') }}" title="Upload">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" id="signOutBtn" title="Sign Out">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </a>
+                <a href="#" id="helpBtn" title="Help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="page-header">
+                <button class="hamburger" id="hamburger" type="button" aria-label="Open menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">—</div>
+                        <div class="user-role" id="userRole">—</div>
+                    </div>
+                    <button class="settings-gear" id="settingsGearBtn" title="Account settings" hidden>
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label for="startDateFilter">Start Date</label>
+                        <input type="text" id="startDateFilter" autocomplete="off" placeholder="mm/dd/yyyy">
+                    </div>
+                    <div class="filter-group">
+                        <label for="endDateFilter">End Date</label>
+                        <input type="text" id="endDateFilter" autocomplete="off" placeholder="mm/dd/yyyy">
+                    </div>
+                    <div class="filter-group">
+                        <label>Quick Filters</label>
+                        <div class="quick-filter-buttons" id="quickFilterButtons">
+                            <button type="button" class="quick-filter-btn" data-range="today">Today</button>
+                            <button type="button" class="quick-filter-btn" data-range="week">This Week</button>
+                            <button type="button" class="quick-filter-btn" data-range="year">This Year</button>
+                            <button type="button" class="quick-filter-btn" data-range="custom">Custom Range</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Category</label>
+                        <div class="checkbox-dropdown" id="categoryFilterDropdown">
+                            <button type="button" class="checkbox-dropdown-toggle" id="categoryFilterToggle">
+                                <span id="categoryFilterToggleLabel">All Categories</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="checkbox-dropdown-panel" id="categoryFilterPanel" hidden>
+                                <label class="checkbox-dropdown-item checkbox-dropdown-all">
+                                    <input type="checkbox" id="categoryFilterAll" checked>
+                                    <span>All Categories</span>
+                                </label>
+                                <div class="checkbox-dropdown-list" id="categoryFilterList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Product</label>
+                        <div class="checkbox-dropdown" id="productFilterDropdown">
+                            <button type="button" class="checkbox-dropdown-toggle" id="productFilterToggle">
+                                <span id="productFilterToggleLabel">All Products</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="checkbox-dropdown-panel" id="productFilterPanel" hidden>
+                                <input type="text" id="productFilterSearch" class="checkbox-dropdown-search" placeholder="Search products...">
+                                <label class="checkbox-dropdown-item checkbox-dropdown-all">
+                                    <input type="checkbox" id="productFilterAll" checked>
+                                    <span>All Products</span>
+                                </label>
+                                <div class="checkbox-dropdown-list" id="productFilterList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group filter-group-print" title="Loading dashboard data...">
+                        <button type="button" class="btn-primary print-report-btn" id="printReportBtn" title="Loading dashboard data..." disabled>
+                            <i class="fas fa-print"></i> Print Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-title">Total Revenue</div>
+                        <div class="stat-card-value" id="statTotalRevenue">—</div>
+                        <div class="stat-card-subtext stat-card-date-range">All time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">Total Transactions</div>
+                        <div class="stat-card-value" id="statTotalTransactions">—</div>
+                        <div class="stat-card-subtext stat-card-date-range">All time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">Average Sales per Transaction</div>
+                        <div class="stat-card-value" id="statAverageSalesPerTransaction">—</div>
+                        <div class="stat-card-subtext stat-card-date-range">All time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">
+                            Average Number of Products per Transaction
+                            <button type="button" class="info-tooltip">
+                                <i class="fas fa-circle-info"></i>
+                                <span class="info-tooltip-bubble" id="avgProductsTooltipText">Customers purchase 2–3 different items per transaction. Track this to see if upsells or combos are landing.</span>
+                            </button>
+                        </div>
+                        <div class="stat-card-value" id="statAverageProductsPerTransaction">—</div>
+                        <div class="stat-card-subtext stat-card-date-range">All time</div>
+                    </div>
+                </div>
+
+                <!-- Revenue by Category / Best Selling -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <h3 class="section-title">Distribution of Café Revenue Across Product Categories</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="revenueByCategoryChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3 class="section-title">Top 10 Best-Selling Menu Items by Sales Volume</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="bestSellingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Sales Trend / Transaction Volume per Month -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <h3 class="section-title">Trajectory of Monthly Sales</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="monthlySalesTrendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3 class="section-title">Transaction Volume per Month</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="orderSummaryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category / Top Products per Month -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <h3 class="section-title">Transaction Volume of each Category per Month</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="transactionVolumeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header-row">
+                            <h3 class="section-title">Transaction Volume for the Top 10 Products per Month</h3>
+                            <div class="sort-toggle">
+                                <span style="font-size: 12px; margin-right: 8px;">Sort by:</span>
+                                <button class="btn-primary btn-small" id="topProductsSortToggle">Descending</button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="topProductsMonthlyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day of Week / Hour of Day -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <h3 class="section-title">Distribution of Total Customer Transactions by Day of the Week</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="transactionsByDayChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3 class="section-title">Distribution of Customer Transactions by Hour of the Day</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="transactionsByHourChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Out Confirmation Modal -->
+    <div class="modal-overlay" id="signOutConfirmModal">
+        <div class="modal">
+            <div class="modal-header">Sign Out?</div>
+            <div class="modal-body">
+                <p>Are you sure you want to sign out?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSignOutConfirm()">Cancel</button>
+                <button class="btn-primary" onclick="confirmSignOut()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">Help & Support</div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <h3>Dashboard Overview</h3>
+                    <p>The dashboard provides a quick overview of your café's key metrics and performance indicators.</p>
+
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><strong>Dashboard:</strong> View key metrics and charts</li>
+                        <li><strong>Analytics:</strong> Analyze product pairings and associations</li>
+                        <li><strong>Products:</strong> Manage your product catalog</li>
+                        <li><strong>Upload:</strong> Import transaction data</li>
+                    </ul>
+
+                    <h3>Need More Help?</h3>
+                    <p>Contact your system administrator for additional support.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeHelpModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print-only report, filled by printDashboardReport() and cleared after printing -->
+    <div id="printReport" class="print-report" data-logo-src="{{ url_for('static', filename='assets/keat_logo.jpg') }}"></div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

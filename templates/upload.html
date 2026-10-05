@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keat - Decision Support System | Upload</title>
+
+    <!-- Favicons -->
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicons/favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='assets/favicons/favicon-48x48.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicons/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
+    <meta name="theme-color" content="#2c1e1d">
+    
+    <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo">keat</div>
+            </div>
+            
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="{{ url_for('dashboard') }}" title="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('analytics') }}" title="Analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('products') }}" title="Products">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </a>
+                <a href="{{ url_for('upload') }}" class="active" title="Upload">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" id="signOutBtn" title="Sign Out">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </a>
+                <a href="#" id="helpBtn" title="Help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="page-header">
+                <button class="hamburger" id="hamburger" type="button" aria-label="Open menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Upload</h1>
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">—</div>
+                        <div class="user-role" id="userRole">—</div>
+                    </div>
+                    <button class="settings-gear" id="settingsGearBtn" title="Account settings" hidden>
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Page Content -->
+            <div class="page-content">
+                <div class="upload-container">
+                    <div class="upload-row">
+                        <!-- Left Section: Drop Zone -->
+                        <div class="upload-left" id="dropZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div class="upload-text">Drag your file here</div>
+                            <div class="upload-divider">or</div>
+                            <button type="button" class="btn-primary" id="browseBtn">Browse</button>
+                            <input 
+                                type="file" 
+                                id="fileInput" 
+                                accept=".csv,.xlsx"
+                                style="display: none;"
+                            >
+                            <div id="fileSelected" style="margin-top: 12px; font-size: 12px; color: #666;"></div>
+                        </div>
+                        
+                        <!-- Right Section: Info & Requirements -->
+                        <div class="upload-right">
+                            <div class="upload-info-box">
+                                <div class="upload-info-title">Insert New Data</div>
+                                <div class="upload-info-text">
+                                    Support for <strong>CSV</strong> and <strong>XLSX</strong> file. Maximum of <strong>50 MB</strong>.
+                                </div>
+                                
+                                <div class="upload-info-title" style="margin-top: 16px;">Required Fields:</div>
+                                <div class="required-fields">
+                                    <ul class="required-fields-list">
+                                        <li>Receipt ID</li>
+                                        <li>Date</li>
+                                        <li>Product Name</li>
+                                        <li>Category</li>
+                                        <li>Quantity</li>
+                                        <li>Timestamp</li>
+                                    </ul>
+                                </div>
+
+                                <div class="upload-info-title" style="margin-top: 16px;">Optional Fields:</div>
+                                <div class="required-fields">
+                                    <ul class="required-fields-list">
+                                        <li>Price</li>
+                                        <li>Total</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn-primary" id="uploadBtn" style="width: 100%; margin-top: auto;">
+                                Upload and Process
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Progress Modal -->
+    <div class="modal-overlay" id="uploadProgressModal">
+        <div class="modal">
+            <div class="modal-header">Uploading File</div>
+            <div class="modal-body">
+                <div style="text-align: center;">
+                    <div id="uploadProgress" style="margin-bottom: 12px; font-size: 14px;">0%</div>
+                    <div style="width: 100%; height: 8px; background-color: #E8E4DB; border-radius: 4px; overflow: hidden;">
+                        <div id="progressBar" style="width: 0%; height: 100%; background-color: var(--brown-dark); transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload Success Modal -->
+    <div class="modal-overlay" id="uploadSuccessModal">
+        <div class="modal">
+            <div class="modal-header" style="text-align: center;">
+                <i class="fas fa-check-circle" style="color: #2e7d32; font-size: 32px; margin-bottom: 8px;"></i>
+                <div>Upload Successful!</div>
+            </div>
+            <div class="modal-body">
+                <div id="uploadSuccessMessage">Your file has been uploaded successfully.</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closeUploadSuccess()">Done</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sign Out Confirmation Modal -->
+    <div class="modal-overlay" id="signOutConfirmModal">
+        <div class="modal">
+            <div class="modal-header">Sign Out?</div>
+            <div class="modal-body">
+                <p>Are you sure you want to sign out?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSignOutConfirm()">Cancel</button>
+                <button class="btn-primary" onclick="confirmSignOut()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">Help & Support</div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <h3>File Upload Instructions</h3>
+                    <p>Upload transaction data to train the decision support system.</p>
+                    
+                    <h3>Supported Formats</h3>
+                    <ul>
+                        <li>CSV (.csv)</li>
+                        <li>Excel (.xlsx)</li>
+                    </ul>
+                    
+                    <h3>Requirements</h3>
+                    <ul>
+                        <li>Maximum file size: 50 MB</li>
+                        <li>All required fields must be present</li>
+                        <li>Column names must match the specified fields</li>
+                    </ul>
+                    
+                    <h3>How to Upload</h3>
+                    <ol style="margin-left: 20px;">
+                        <li>Click "Browse" or drag your file here</li>
+                        <li>Select a CSV or XLSX file</li>
+                        <li>Click "Upload and Process"</li>
+                        <li>Wait for confirmation</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeHelpModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</body>
+</html>

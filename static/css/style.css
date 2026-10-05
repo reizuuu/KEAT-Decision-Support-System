@@ -1,0 +1,2572 @@
+/* ====================================
+   KEAT DECISION SUPPORT SYSTEM
+   Global Styles & CSS Variables
+   ==================================== */
+
+:root {
+    /* Color Palette - Coffee/Café Inspired */
+    --cream: #FAF8F3;
+    --ivory: #F5F3EE;
+    --chrome-bg: #E6DCD2; /* top bar + sidebar, a shade darker than the content area */
+    --brown-dark: #5D4E37;
+    --brown-medium: #8B7355;
+    --brown-light: #D4AF99;
+    --text-dark: #2C2416;
+    --text-light: #FFFFFF;
+    --border-color: #5D4E37;
+    --hover-brown: #4A3D2A;
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 50%;
+    
+    /* Typography */
+    --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display: 'Cormorant Garamond', 'Playfair Display', serif;
+    
+    /* Border */
+    --border-thin: 1px solid var(--border-color);
+    --border-medium: 2px solid var(--border-color);
+}
+
+/* ====================================
+   GLOBAL & RESET
+   ==================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: var(--font-primary);
+    background-color: var(--cream);
+    color: var(--text-dark);
+}
+
+body {
+    line-height: 1.6;
+}
+
+/* ====================================
+   TYPOGRAPHY
+   ==================================== */
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text-dark);
+}
+
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: 20px;
+}
+
+h4 {
+    font-size: 16px;
+}
+
+p {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.text-sm {
+    font-size: 12px;
+}
+
+.text-xs {
+    font-size: 11px;
+}
+
+.logo {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--brown-dark);
+    letter-spacing: 2px;
+}
+
+/* ====================================
+   LINKS & BUTTONS
+   ==================================== */
+
+a {
+    color: var(--brown-dark);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--hover-brown);
+}
+
+button {
+    font-family: var(--font-primary);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 500;
+    border: var(--border-thin);
+}
+
+.btn-primary:hover {
+    background-color: var(--hover-brown);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--brown-dark);
+    border: var(--border-thin);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-secondary:hover {
+    background-color: var(--ivory);
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* ====================================
+   FORMS
+   ==================================== */
+
+input, select, textarea {
+    font-family: var(--font-primary);
+    font-size: 14px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: var(--border-thin);
+    border-radius: var(--radius-md);
+    background-color: var(--text-light);
+    color: var(--text-dark);
+    transition: border-color 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--brown-medium);
+    background-color: var(--ivory);
+}
+
+input::placeholder {
+    color: #999;
+}
+
+label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text-dark);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-note {
+    font-size: 11px;
+    color: #888;
+    margin-top: var(--spacing-sm);
+}
+
+/* Same small-note placement convention as .form-note, but for a note that
+   needs to actually stand out (e.g. the upload success modal's list of
+   catalog-unmatched products) - reuses the app's existing warning/error
+   red (see .error-message, .notification.error) rather than a new color. */
+.form-note-warning {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d32f2f;
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: rgba(211, 47, 47, 0.08);
+    border-left: 3px solid #d32f2f;
+    border-radius: var(--radius-sm);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--brown-dark);
+}
+
+.error-message {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: var(--spacing-sm);
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+/* ====================================
+   LAYOUT: LOGIN PAGE
+   ==================================== */
+
+.login-container {
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
+}
+
+.login-left {
+    flex: 1;
+    background-color: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+}
+
+.login-form-wrapper {
+    width: 100%;
+    max-width: 380px;
+}
+
+.login-heading {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-dark);
+}
+
+.login-subtext {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: var(--spacing-xl);
+}
+
+.login-form {
+    width: 100%;
+}
+
+/* Username and password boxes share one fixed width (the width they
+   already had), so the eye button's extra padding can't make the password
+   box wider than the username box. */
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 210px;
+}
+
+/* Password box with a show/hide eye button inside its right edge. */
+.password-field {
+    position: relative;
+    display: inline-block;
+}
+
+.password-field input {
+    padding-right: 40px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+    color: var(--brown-dark);
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid var(--brown-medium);
+    outline-offset: 1px;
+}
+
+.login-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    font-size: 13px;
+}
+
+.login-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: var(--text-light);
+    overflow: hidden;
+    background-color: #5D4E37;
+}
+
+.login-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Responsive Login */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+    
+    .login-right {
+        display: none;
+    }
+    
+    .login-left {
+        height: auto;
+        min-height: 100vh;
+        padding: var(--spacing-xl);
+    }
+    
+    .login-form-wrapper {
+        max-width: 100%;
+    }
+}
+
+/* ====================================
+   LAYOUT: AUTHENTICATED PAGES
+   ==================================== */
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 110px;
+    background-color: var(--chrome-bg);
+    border-right: var(--border-thin);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    overflow-y: auto;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.sidebar-logo .logo {
+    font-size: 26px;
+}
+
+.sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.sidebar-nav a {
+    padding: var(--spacing-md);
+    text-align: center;
+    font-size: 12px;
+    border-radius: var(--radius-md);
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-dark);
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav a i {
+    font-size: 18px;
+}
+
+.sidebar-nav a:hover {
+    background-color: var(--ivory);
+}
+
+.sidebar-nav a.active {
+    border-color: var(--brown-dark);
+    background-color: var(--ivory);
+    color: var(--brown-dark);
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: auto;
+}
+
+.sidebar-footer a {
+    padding: var(--spacing-sm);
+    text-align: center;
+    font-size: 11px;
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.sidebar-footer a:hover {
+    background-color: var(--ivory);
+}
+
+/* Hamburger for Mobile */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--brown-dark);
+    margin-right: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    /* The huge spread shadow doubles as a backdrop dimming the page behind
+       the open menu - no extra markup needed, and clicks on it still reach
+       the document so initializeHamburger()'s click-outside close works. */
+    .sidebar.active {
+        transform: translateX(0);
+        box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* MAIN CONTENT */
+/* min-width: 0 lets the column shrink below its content's width, so a wide
+   table or chart scrolls inside its own box instead of pushing the page
+   sideways. */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* PAGE HEADER */
+.page-header {
+    background-color: var(--chrome-bg);
+    border-bottom: var(--border-thin);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background-color: var(--brown-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.user-info {
+    text-align: right;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.user-role {
+    font-size: 11px;
+    color: #666;
+}
+
+.settings-gear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-full);
+    background-color: transparent;
+    color: var(--text-dark);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.settings-gear:hover {
+    background-color: var(--cream);
+}
+
+.settings-gear[hidden] {
+    display: none;
+}
+
+/* PAGE CONTENT */
+.page-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+    background-color: var(--cream);
+}
+
+/* ====================================
+   DASHBOARD COMPONENTS
+   ==================================== */
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    min-width: 160px;
+}
+
+.filter-group label {
+    margin-bottom: 0;
+}
+
+/* .info-tooltip defaults to a light icon color for dark backgrounds
+   (stat cards/boxes) - filter labels sit on the page's light background,
+   so the icon needs a dark, visible color here instead. */
+.filter-group label .info-tooltip {
+    color: var(--brown-medium);
+    opacity: 0.8;
+}
+
+.quick-filter-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.quick-filter-btn {
+    background-color: transparent;
+    color: var(--brown-dark);
+    border: var(--border-thin);
+    padding: 6px 14px;
+    border-radius: var(--radius-lg);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.quick-filter-btn:hover {
+    background-color: var(--ivory);
+}
+
+.quick-filter-btn.active {
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+}
+
+.checkbox-dropdown {
+    position: relative;
+    min-width: 200px;
+}
+
+.checkbox-dropdown-toggle {
+    width: 100%;
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 14px;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+}
+
+.checkbox-dropdown-toggle:hover {
+    background-color: var(--ivory);
+}
+
+.checkbox-dropdown-toggle i {
+    font-size: 11px;
+    color: var(--brown-medium);
+}
+
+.checkbox-dropdown-toggle span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.checkbox-dropdown-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    max-height: 260px;
+    overflow-y: auto;
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-md);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    z-index: 30;
+    padding: var(--spacing-sm) 0;
+}
+
+.checkbox-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 6px var(--spacing-md);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.checkbox-dropdown-item:hover {
+    background-color: var(--ivory);
+}
+
+.checkbox-dropdown-item input[type="checkbox"] {
+    padding: 0;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.checkbox-dropdown-all {
+    border-bottom: 1px solid #E8E4DB;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.checkbox-dropdown-search {
+    display: block;
+    width: calc(100% - var(--spacing-md) * 2);
+    margin: 0 var(--spacing-md) var(--spacing-sm);
+    padding: 6px var(--spacing-sm);
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+}
+
+.checkbox-dropdown-empty {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 12px;
+    color: var(--brown-medium);
+}
+
+.chart-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    color: var(--brown-medium);
+    font-size: 14px;
+    padding: var(--spacing-lg);
+}
+
+.table-empty-message {
+    text-align: center;
+    color: var(--brown-medium);
+    font-size: 14px;
+    padding: var(--spacing-lg);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.stat-card {
+    background-color: var(--brown-dark);
+    border-radius: var(--radius-lg);
+    border: var(--border-thin);
+    padding: var(--spacing-lg);
+    color: var(--text-light);
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.9;
+}
+
+.stat-card-value {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.stat-card-subtext {
+    font-size: 11px;
+    font-weight: 400;
+    margin-top: var(--spacing-xs);
+    opacity: 0.7;
+}
+
+/* Marks a rule's confidence as stale-pending-remine after a product
+   delete's instant prune structurally edited it (see
+   services/persistence.prune_rules_for_product / Rules.is_approximate).
+   A native `title` attribute (not the .info-tooltip click-modal component)
+   gives an actual hover tooltip, matching what this marker calls for. */
+.approximate-marker {
+    cursor: help;
+    font-style: italic;
+    opacity: 0.75;
+}
+
+/* Click opens a modal popup (see openInfoPopup() in script.js) rather than
+   a hover bubble - avoids the bubble getting clipped near the top of a
+   scrollable .page-content, and works the same on touch as on desktop. */
+.info-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    background: transparent;
+    color: var(--text-light);
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.info-tooltip:hover,
+.info-tooltip:focus-visible {
+    opacity: 1;
+}
+
+.info-tooltip:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.info-tooltip i {
+    font-size: 13px;
+}
+
+/* Holds the explanation text read by openInfoPopup() - never shown inline. */
+.info-tooltip-bubble {
+    display: none;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-dark);
+}
+
+.chart-header-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.chart-header-row .section-title {
+    margin-bottom: var(--spacing-lg);
+    flex: 1;
+}
+
+.chart-container {
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.charts-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+}
+
+/* Grid items default to min-width: auto, so a chart canvas's last drawn
+   width would keep its column from shrinking and push the page sideways. */
+.charts-row > *,
+.stats-grid > * {
+    min-width: 0;
+}
+
+/* ====================================
+   ANALYTICS COMPONENTS
+   ==================================== */
+
+.analytics-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-md);
+}
+
+.stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stat-box {
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    border: var(--border-thin);
+    min-width: 120px;
+    text-align: center;
+}
+
+.stat-box-label {
+    font-size: 11px;
+    opacity: 0.9;
+    margin-bottom: var(--spacing-sm);
+}
+
+.stat-box-label .info-tooltip {
+    width: 11px;
+    height: 11px;
+    margin-left: 3px;
+}
+
+.stat-box-label .info-tooltip i {
+    font-size: 10px;
+}
+
+.stat-box-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* Shown on the Analytics page while a background remine is still in
+   flight (see static/js/analytics.js's recalculating-badge polling) -
+   an amber "in progress" tone, distinct from the app's existing
+   success/error notification colors since this isn't either. */
+.recalculating-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 12px;
+    font-weight: 600;
+    color: #a35c00;
+    background-color: rgba(163, 92, 0, 0.1);
+    border: 1px solid rgba(163, 92, 0, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+/* The class rule above sets display explicitly, which (at equal
+   specificity) overrides the browser's own [hidden] { display: none }
+   UA-stylesheet rule - same gotcha already handled for .settings-gear
+   above. Without this, toggling badge.hidden in JS has no visual effect
+   and the badge stays visible/spinning permanently, dataset or not. */
+.recalculating-badge[hidden] {
+    display: none;
+}
+
+.controls-row {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.search-bar {
+    flex: 1;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    background-color: var(--brown-dark);
+    border-radius: var(--radius-lg);
+    border: var(--border-thin);
+    padding: 0 var(--spacing-md);
+    height: 40px;
+}
+
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 13px;
+}
+
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-bar i {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.analytics-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.analytics-tab-btn {
+    background-color: transparent;
+    color: var(--brown-dark);
+    border: var(--border-thin);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.analytics-tab-btn:hover {
+    background-color: var(--ivory);
+}
+
+.analytics-tab-btn.active {
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+}
+
+/* ====================================
+   PRINT REPORT BUTTON (Dashboard filter bar + Analytics tabs row)
+   ==================================== */
+
+/* Pushed to the right end of its flex row; when the Dashboard filter bar
+   wraps on narrow screens it simply lands right-aligned on its own line.
+   justify-content: flex-end lines the button up with the other filter
+   controls (below their labels) rather than with the labels. */
+.filter-group-print {
+    min-width: auto;
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.print-report-btn-wrap {
+    margin-left: auto;
+    display: inline-flex;
+}
+
+/* Same [hidden] override gotcha as .settings-gear / .recalculating-badge. */
+.print-report-btn-wrap[hidden] {
+    display: none;
+}
+
+.print-report-btn {
+    white-space: nowrap;
+}
+
+.print-report-btn i {
+    margin-right: 6px;
+}
+
+.print-report-btn:disabled,
+.print-report-btn:disabled:hover {
+    background-color: var(--brown-dark);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Only ever filled while printing (see printReportHtml() in script.js) and
+   only shown by the @media print rules at the end of this file. */
+.print-report {
+    display: none;
+}
+
+.bundles-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.bundles-filters .filter-group input {
+    width: 140px;
+}
+
+th.sortable-th {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+th.sortable-th:hover {
+    color: var(--hover-brown);
+}
+
+/* Back Button */
+.back-button {
+    width: 50px;
+    height: 50px;
+    background-color: var(--brown-dark);
+    border: var(--border-thin);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 auto var(--spacing-xl);
+}
+
+.back-button:hover {
+    background-color: var(--hover-brown);
+}
+
+/* Analytics drill-down: search-as-you-type dropdown, anchored under the
+   shared search bar in .analytics-header-row's .controls-row. */
+.search-dropdown {
+    position: absolute;
+    top: calc(100% + var(--spacing-sm));
+    right: 0;
+    width: 300px;
+    max-height: 240px;
+    overflow-y: auto;
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+.search-dropdown-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.search-dropdown-item:hover {
+    background-color: var(--ivory);
+}
+
+.search-dropdown-item-category {
+    font-size: 11px;
+    color: #888;
+    white-space: nowrap;
+}
+
+/* Level 1: category grid */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--spacing-2xl);
+    row-gap: var(--spacing-lg);
+    padding: 0 var(--spacing-2xl);
+}
+
+.category-tile {
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-lg);
+    padding: calc(var(--spacing-xl) + 24px) var(--spacing-lg);
+    font-family: var(--font-primary);
+    font-size: 26px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.category-tile:hover {
+    background-color: var(--hover-brown);
+}
+
+/* Levels 2 & 3: shared back-button + title (+ sort) subheader */
+.drilldown-subheader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.back-button-inline {
+    margin: 0;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.drilldown-title {
+    flex: 1;
+}
+
+.sort-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.row-expand-cell {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.row-expand-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+    border: none;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-primary);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover .row-expand-btn {
+    background-color: var(--hover-brown);
+}
+
+/* Level 3: product detail card */
+.product-detail-card {
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    overflow-x: auto;
+}
+
+.product-detail-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+}
+
+.product-detail-card table td {
+    border: 1px solid #E8E4DB;
+}
+
+/* Level 2 & 3 results: center columns and give rows more presence so a
+   full-width table doesn't read as having a big empty gap in the middle. */
+#analyticsLevel2 th,
+#analyticsLevel2 td,
+#analyticsLevel3 td {
+    text-align: center;
+    font-size: 16px;
+    padding: var(--spacing-xl) calc(var(--spacing-xl) + var(--spacing-lg));
+}
+
+/* Cap and center the level 2/3 result boxes instead of letting them
+   stretch the full page width. */
+#analyticsLevel2 .table-container {
+    max-width: 960px;
+    margin: 0 auto var(--spacing-lg);
+}
+
+#analyticsLevel3 .product-detail-card {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+/* ====================================
+   TABLES
+   ==================================== */
+
+/* Scrolls sideways at every width - the 8-column Product Bundles table
+   overflows well before phone sizes. */
+.table-container {
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    margin-bottom: var(--spacing-lg);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+thead {
+    background-color: var(--ivory);
+    border-bottom: var(--border-thin);
+}
+
+th {
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+td {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid #E8E4DB;
+    color: var(--text-dark);
+}
+
+tr:hover {
+    background-color: var(--ivory);
+}
+
+.action-icons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.action-icons a {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brown-dark);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.action-icons a:hover {
+    color: var(--hover-brown);
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    table {
+        min-width: 600px;
+    }
+}
+
+/* ====================================
+   PRODUCTS PAGE
+   ==================================== */
+
+.products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-md);
+}
+
+.product-count {
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    border: var(--border-thin);
+    font-weight: 600;
+    min-width: 100px;
+    text-align: center;
+}
+
+.products-toolbar {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.products-toolbar input[type="text"] {
+    flex: 1;
+    max-width: 300px;
+}
+
+.category-filter {
+    min-width: 160px;
+}
+
+.btn-add-product {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.product-name-cell {
+    font-weight: 500;
+}
+
+.product-alias-cell {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* ====================================
+   UPLOAD PAGE
+   ==================================== */
+
+.upload-container {
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    min-height: 400px;
+}
+
+.upload-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.upload-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    background-color: var(--ivory);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upload-left:hover {
+    background-color: #F0EAE0;
+    border-color: var(--brown-medium);
+}
+
+.upload-left i {
+    font-size: 48px;
+    color: var(--brown-dark);
+    margin-bottom: var(--spacing-lg);
+}
+
+.upload-text {
+    font-size: 14px;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-dark);
+}
+
+.upload-divider {
+    margin-bottom: var(--spacing-md);
+    font-size: 12px;
+    color: #999;
+}
+
+.upload-left .btn-primary {
+    margin-top: var(--spacing-md);
+}
+
+.upload-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.upload-info-box {
+    background-color: var(--ivory);
+    border: var(--border-thin);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+}
+
+.upload-info-title {
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    font-size: 14px;
+}
+
+.upload-info-text {
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: var(--spacing-md);
+    color: #666;
+}
+
+.required-fields {
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.required-fields-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+    font-size: 11px;
+}
+
+.required-fields-list li {
+    list-style: none;
+}
+
+.required-fields-list li:before {
+    content: "• ";
+    color: var(--brown-dark);
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+/* Responsive Upload */
+@media (max-width: 992px) {
+    .upload-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ====================================
+   MODALS
+   ==================================== */
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background-color: var(--text-light);
+    border: var(--border-thin);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    max-width: 400px;
+    width: 90%;
+    /* Caps the modal to the viewport and turns it into a flex column so a
+       long body (e.g. the upload success modal's unmatched-products list)
+       scrolls within itself instead of overflowing off-screen, while the
+       header/footer stay put. */
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-dark);
+    flex-shrink: 0;
+}
+
+.modal-body {
+    margin-bottom: var(--spacing-lg);
+    overflow-y: auto;
+    /* Lets the flex item actually shrink below its content's natural
+       height instead of forcing the modal to grow past max-height. */
+    min-height: 0;
+}
+
+.modal-footer {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.modal-footer .btn-secondary {
+    order: 1;
+}
+
+.modal-footer .btn-primary {
+    order: 2;
+}
+
+/* ====================================
+   HELP MODAL
+   ==================================== */
+
+.help-content {
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.help-content h3 {
+    font-size: 16px;
+    margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+    color: var(--brown-dark);
+}
+
+.help-content p {
+    margin-bottom: var(--spacing-md);
+}
+
+.help-content ul {
+    margin-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.help-content li {
+    margin-bottom: var(--spacing-sm);
+}
+
+/* ====================================
+   NOTIFICATIONS
+   ==================================== */
+
+.notification {
+    position: fixed;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    background-color: var(--brown-dark);
+    color: var(--text-light);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    border: var(--border-thin);
+    z-index: 3000;
+    animation: slideIn 0.3s ease;
+    max-width: 300px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification.error {
+    background-color: #d32f2f;
+}
+
+.notification.success {
+    background-color: #2e7d32;
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 992px) {
+    .page-header {
+        padding: var(--spacing-md);
+    }
+    
+    .page-content {
+        padding: var(--spacing-md);
+    }
+    
+    .sidebar {
+        width: 96px;
+        padding: var(--spacing-md) var(--spacing-sm);
+    }
+    
+    .sidebar-nav a {
+        padding: var(--spacing-sm) 6px;
+        font-size: 10px;
+    }
+    
+    .sidebar-nav a i {
+        font-size: 16px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .analytics-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .search-bar {
+        max-width: 100%;
+    }
+    
+    .products-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .products-toolbar {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+}
+
+@media (max-width: 992px) {
+    /* Analytics Level 1: tighter tiles so two columns still fit a tablet. */
+    .category-grid {
+        column-gap: var(--spacing-lg);
+        padding: 0;
+    }
+
+    .category-tile {
+        padding: var(--spacing-2xl) var(--spacing-md);
+        font-size: 22px;
+    }
+
+    #analyticsLevel2 th,
+    #analyticsLevel2 td,
+    #analyticsLevel3 td {
+        padding: var(--spacing-lg);
+    }
+
+    .upload-container {
+        padding: var(--spacing-xl);
+    }
+}
+
+/* Tablets and phones (sidebar becomes the off-canvas hamburger menu). */
+@media (max-width: 768px) {
+    .main-content {
+        width: 100%;
+    }
+
+    /* Slide-out menu: half the screen, links as icon + label rows so each
+       selection box encloses its whole label. */
+    .sidebar {
+        width: 50%;
+        min-width: 200px;
+        max-width: 320px;
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+
+    .sidebar-nav {
+        gap: var(--spacing-sm);
+    }
+
+    .sidebar-nav a,
+    .sidebar-footer a {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: var(--spacing-md);
+        padding: 12px var(--spacing-md);
+        font-size: 14px;
+        text-align: left;
+    }
+
+    .sidebar-nav a i,
+    .sidebar-footer a i {
+        width: 20px;
+        font-size: 18px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+        gap: var(--spacing-xs);
+    }
+
+    .page-header {
+        padding: var(--spacing-sm) var(--spacing-md);
+        gap: var(--spacing-sm);
+    }
+
+    .page-title {
+        flex: 1;
+        min-width: 0;
+        font-size: 20px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .hamburger {
+        margin-right: 0;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
+
+    .page-content {
+        padding: var(--spacing-md);
+    }
+
+    /* 16px stops iOS Safari from zooming the page in on every input focus. */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    /* Dashboard filter bar: each control gets a usable full-width row,
+       dates side by side. */
+    .filter-bar {
+        gap: var(--spacing-md);
+    }
+
+    .filter-group {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .filter-bar > .filter-group:nth-child(1),
+    .filter-bar > .filter-group:nth-child(2) {
+        flex-basis: calc(50% - var(--spacing-md) / 2);
+    }
+
+    .filter-group input,
+    .checkbox-dropdown {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-group-print {
+        margin-left: 0;
+    }
+
+    .filter-group-print .print-report-btn {
+        width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .stat-card {
+        padding: var(--spacing-md);
+    }
+
+    .stat-card-title {
+        font-size: 13px;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .stat-card-value {
+        font-size: 24px;
+    }
+
+    .charts-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .chart-container {
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .chart-wrapper {
+        height: 260px;
+    }
+
+    .section-title,
+    .chart-header-row .section-title {
+        font-size: 16px;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .upload-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .upload-container {
+        padding: var(--spacing-md);
+        min-height: 0;
+    }
+
+    .upload-left {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    /* Analytics: the two stat boxes share a row. */
+    .stats-row {
+        width: 100%;
+        gap: var(--spacing-sm);
+    }
+
+    .stat-box {
+        flex: 1 1 140px;
+        min-width: 0;
+    }
+
+    .analytics-header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+    }
+
+    .search-bar {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .search-dropdown {
+        left: 0;
+        width: 100%;
+    }
+
+    .category-grid {
+        grid-template-columns: 1fr;
+        row-gap: var(--spacing-md);
+    }
+
+    .category-tile {
+        padding: var(--spacing-xl) var(--spacing-md);
+        font-size: 20px;
+    }
+
+    .drilldown-subheader {
+        gap: var(--spacing-md);
+    }
+
+    .drilldown-title {
+        font-size: 20px;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    #analyticsLevel2 th,
+    #analyticsLevel2 td,
+    #analyticsLevel3 td {
+        font-size: 14px;
+        padding: var(--spacing-md);
+    }
+
+    .bundles-filters {
+        gap: var(--spacing-md);
+    }
+
+    .bundles-filters .filter-group {
+        flex: 1 1 140px;
+    }
+
+    .bundles-filters .filter-group input {
+        width: 100%;
+    }
+
+    .products-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .products-toolbar input[type="text"],
+    .products-toolbar .category-filter {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .btn-add-product {
+        justify-content: center;
+    }
+
+    .modal {
+        width: calc(100% - var(--spacing-xl));
+        max-width: 400px;
+        padding: var(--spacing-lg);
+    }
+
+    .modal-footer {
+        flex-wrap: wrap;
+    }
+
+    .notification {
+        top: var(--spacing-md);
+        left: var(--spacing-md);
+        right: var(--spacing-md);
+        max-width: none;
+    }
+
+    .user-info {
+        display: none;
+    }
+}
+
+/* Small phones. */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    .login-left {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+
+    .login-heading {
+        font-size: 24px;
+    }
+
+    .filter-bar > .filter-group:nth-child(1),
+    .filter-bar > .filter-group:nth-child(2) {
+        flex-basis: 100%;
+    }
+
+    .quick-filter-btn {
+        flex: 1 1 calc(50% - var(--spacing-sm));
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-wrapper {
+        height: 220px;
+    }
+
+    .analytics-tab-btn {
+        flex: 1;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .print-report-btn-wrap {
+        flex-basis: 100%;
+        margin-left: 0;
+    }
+
+    .print-report-btn-wrap .print-report-btn {
+        width: 100%;
+    }
+
+    .required-fields-list {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-footer > button {
+        flex: 1;
+    }
+}
+
+/* ====================================
+   UTILITY CLASSES
+   ==================================== */
+
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mt-sm {
+    margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+    margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+    margin-top: var(--spacing-lg);
+}
+
+.mb-sm {
+    margin-bottom: var(--spacing-sm);
+}
+
+.mb-md {
+    margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+    margin-bottom: var(--spacing-lg);
+}
+
+.gap-sm {
+    gap: var(--spacing-sm);
+}
+
+.gap-md {
+    gap: var(--spacing-md);
+}
+
+.gap-lg {
+    gap: var(--spacing-lg);
+}
+
+/* ====================================
+   PRINT (Dashboard/Analytics "Print Report")
+   ==================================== */
+
+/* The app shell is swapped out for #printReport only while <body> has
+   .printing-report (added by printReportHtml() in script.js for the length
+   of one print), so a plain Ctrl+P elsewhere prints the page as before.
+   Hiding every other direct child of <body> covers the sidebar/header/filters
+   (.app-container) plus anything appended to <body> at runtime: modals,
+   toasts, flatpickr calendars.
+
+   The A4 page setup is a *named* page (`page: report`) used only by
+   #printReport, rather than a bare @page rule, so printing any other page
+   (Products, Upload, ...) keeps the browser's default paper and margins.
+   Landscape is a second named page, switched on by body.print-landscape
+   (the Product Bundles table). Page numbers use @page margin boxes, which
+   not every browser supports - they're simply absent where unsupported. */
+@page report {
+    size: A4;
+    margin: 15mm;
+
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: 'Poppins', sans-serif;
+        font-size: 8pt;
+        color: #666;
+    }
+}
+
+@page report-landscape {
+    size: A4 landscape;
+    margin: 15mm;
+
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: 'Poppins', sans-serif;
+        font-size: 8pt;
+        color: #666;
+    }
+}
+
+@media print {
+    /* html carries the cream page background too (see GLOBAL & RESET) and
+       would show through below the report's last row. */
+    html:has(> body.printing-report),
+    body.printing-report {
+        height: auto;
+        background: #fff;
+        color: #000;
+    }
+
+    body.printing-report > :not(#printReport) {
+        display: none !important;
+    }
+
+    body.printing-report #printReport {
+        display: block;
+        page: report;
+    }
+
+    body.printing-report.print-landscape #printReport {
+        page: report-landscape;
+    }
+
+    .print-report {
+        font-family: var(--font-primary);
+        font-size: 9pt;
+        line-height: 1.4;
+        color: #000;
+        /* Keep chart colours, swatches and shaded boxes when printing
+           (browsers drop background colours by default). Inherited. */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .print-report strong {
+        font-weight: 600;
+    }
+
+    .print-report h1,
+    .print-report h2,
+    .print-report h3 {
+        break-after: avoid;
+        page-break-after: avoid;
+        color: #000;
+    }
+
+    .print-report .report-header {
+        border-bottom: 1pt solid #c9c5bb;
+        padding-bottom: 4mm;
+        margin-bottom: 5mm;
+    }
+
+    .print-report .report-brand {
+        display: flex;
+        align-items: center;
+        gap: 4mm;
+        margin-bottom: 3mm;
+    }
+
+    .print-report .report-logo {
+        height: 40px;
+        width: auto;
+    }
+
+    .print-report .report-title {
+        font-size: 15pt;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .print-report .report-generated {
+        font-size: 8.5pt;
+        color: #444;
+    }
+
+    .print-report .report-meta,
+    .print-report .report-filters {
+        margin-top: 2mm;
+    }
+
+    .print-report .report-filters-title {
+        font-weight: 600;
+    }
+
+    .print-report .report-label-list {
+        list-style: none;
+    }
+
+    .print-report .report-label {
+        font-weight: 600;
+    }
+
+    .print-report .report-note {
+        margin-top: 2mm;
+        font-size: 8.5pt;
+        font-style: italic;
+        color: #444;
+    }
+
+    .print-report .report-section {
+        margin-bottom: 6mm;
+    }
+
+    .print-report .report-section-break {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    .print-report .report-section-title {
+        font-size: 11.5pt;
+        font-weight: 600;
+        margin-bottom: 2mm;
+    }
+
+    .print-report .report-highlights {
+        padding-left: 5mm;
+    }
+
+    .print-report .report-caption,
+    .print-report .report-message {
+        margin-bottom: 2mm;
+        color: #444;
+    }
+
+    .print-report .report-footnote {
+        margin-top: 1.5mm;
+        font-size: 8pt;
+        color: #444;
+    }
+
+    .print-report .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .print-report .report-table-narrow {
+        width: auto;
+        min-width: 50%;
+    }
+
+    .print-report .report-table thead {
+        display: table-header-group;
+    }
+
+    .print-report .report-table tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-report .report-table th,
+    .print-report .report-table td {
+        border: 0.5pt solid #cfcbc2;
+        padding: 3pt 6pt;
+        text-align: left;
+        vertical-align: top;
+        overflow-wrap: break-word;
+    }
+
+    .print-report .report-table th {
+        background-color: #f1efea;
+        font-weight: 600;
+    }
+
+    .print-report .report-table .report-num {
+        text-align: right;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .print-report .report-table .report-center {
+        text-align: center;
+    }
+
+    /* Header cells of numeric columns wrap normally (long labels like
+       "Avg Sales per Transaction"); only the numbers themselves stay on one line. */
+    .print-report .report-table th.report-num {
+        white-space: normal;
+    }
+
+    .print-report .report-total-row td {
+        font-weight: 600;
+        border-top: 1pt solid #666;
+    }
+
+    /* Rank | Product | Units Sold (Dashboard's Top 10). */
+    .print-report .report-table-ranked th:first-child {
+        width: 9%;
+    }
+
+    .print-report .report-table-ranked th:last-child {
+        width: 30%;
+    }
+
+    /* ---- Dashboard report charts (inline SVG, see dashboard.js) ---- */
+    .print-report .report-chart-card {
+        border: 0.75pt solid #dedbd3;
+        border-radius: 6pt;
+        padding: 3mm 4mm;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-report .report-chart-card svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .print-report .report-chart-caption {
+        margin-top: 2.5mm;
+        color: #444;
+    }
+
+    .print-report .report-muted {
+        color: #777;
+        font-weight: 400;
+    }
+
+    .print-report .report-swatch {
+        display: inline-block;
+        flex-shrink: 0;
+        width: 7pt;
+        height: 7pt;
+        border-radius: 1.5pt;
+        margin-right: 4pt;
+        vertical-align: -0.5pt;
+    }
+
+    .print-report .report-chart-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5mm 5mm;
+        font-size: 8pt;
+        margin-bottom: 2mm;
+    }
+
+    .print-report .report-chart-legend-split {
+        justify-content: space-between;
+        font-weight: 600;
+    }
+
+    .print-report .report-legend-item {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .print-report .report-chart-card .report-legend-line {
+        display: inline-block;
+        width: 18pt;
+        height: 8pt;
+        margin-right: 4pt;
+    }
+
+    /* Pie: an SVG for the slices and leader lines, with HTML labels placed
+       over it (padding-top sets the height from the SVG's aspect ratio). */
+    .print-report .report-pie {
+        position: relative;
+        height: 0;
+    }
+
+    .print-report .report-chart-card .report-pie-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .print-report .report-pie-label {
+        position: absolute;
+        transform: translateY(-50%);
+        font-size: 8pt;
+        line-height: 1.3;
+        white-space: nowrap;
+    }
+
+    .print-report .report-pie-label-left {
+        text-align: right;
+    }
+
+    .print-report .report-pie-label-name {
+        font-weight: 600;
+    }
+
+    .print-report .report-summary-callout {
+        margin-top: 3mm;
+        padding: 3mm 4mm;
+        background: #f2f6fb;
+        border-left: 3pt solid #2a78d6;
+        border-radius: 0 4pt 4pt 0;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-report .report-summary-callout-title {
+        margin-bottom: 1mm;
+        color: #1f5fae;
+        font-size: 7.5pt;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .print-report .report-summary-callout p {
+        color: #333;
+    }
+
+    /* Hour of Day: a shift label column, then four hour boxes per shift. */
+    .print-report .report-hour-grid {
+        display: grid;
+        grid-template-columns: 34mm repeat(4, 1fr);
+        gap: 3.5mm 2.5mm;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-report .report-hour-shift {
+        font-size: 7.5pt;
+        line-height: 1.35;
+        color: #444;
+    }
+
+    .print-report .report-hour-shift-name {
+        font-size: 10pt;
+        font-weight: 600;
+        color: #000;
+    }
+
+    .print-report .report-hour-shift-strong {
+        font-weight: 600;
+        color: #000;
+    }
+
+    .print-report .report-hour-shift-share {
+        margin-top: 1.5mm;
+    }
+
+    .print-report .report-hour-box {
+        position: relative;
+        padding: 2.5mm 1mm;
+        border-radius: 4pt;
+        text-align: center;
+        line-height: 1.3;
+    }
+
+    .print-report .report-hour-box-outside {
+        background: #f1f1ef;
+        border: 1pt dashed #999;
+        color: #222;
+    }
+
+    .print-report .report-hour-title {
+        font-size: 8pt;
+        font-weight: 600;
+    }
+
+    .print-report .report-hour-value {
+        font-size: 13pt;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .print-report .report-hour-detail {
+        font-size: 7pt;
+        opacity: 0.85;
+    }
+
+    .print-report .report-hour-badge,
+    .print-report .report-hour-tag {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0.5pt 5pt;
+        border-radius: 6pt;
+        font-size: 6pt;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .print-report .report-hour-badge {
+        top: -6pt;
+        background: #111;
+        color: #fff;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .print-report .report-hour-tag {
+        bottom: -6pt;
+        background: #fff;
+        border: 0.75pt solid #999;
+        color: #333;
+    }
+
+    /* Lines up with the hour boxes (shift column width + grid gap). */
+    .print-report .report-hour-legend {
+        margin: 4mm 0 0 36.5mm;
+        font-size: 7.5pt;
+        color: #444;
+    }
+
+    .print-report .report-hour-legend-row {
+        display: flex;
+        align-items: center;
+        gap: 2mm;
+        margin-bottom: 1.5mm;
+    }
+
+    .print-report .report-hour-gradient {
+        display: inline-block;
+        width: 45mm;
+        height: 5pt;
+        border-radius: 3pt;
+    }
+
+    .print-report .report-hour-dashed-icon {
+        display: inline-block;
+        width: 10pt;
+        height: 7pt;
+        border: 1pt dashed #999;
+        border-radius: 2pt;
+        background: #f1f1ef;
+    }
+}

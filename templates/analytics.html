@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keat - Decision Support System | Analytics</title>
+
+    <!-- Favicons -->
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicons/favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='assets/favicons/favicon-48x48.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicons/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
+    <meta name="theme-color" content="#2c1e1d">
+
+    <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo">keat</div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="{{ url_for('dashboard') }}" title="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('analytics') }}" class="active" title="Analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('products') }}" title="Products">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </a>
+                <a href="{{ url_for('upload') }}" title="Upload">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" id="signOutBtn" title="Sign Out">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </a>
+                <a href="#" id="helpBtn" title="Help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="page-header">
+                <button class="hamburger" id="hamburger" type="button" aria-label="Open menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Analytics</h1>
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">—</div>
+                        <div class="user-role" id="userRole">—</div>
+                    </div>
+                    <button class="settings-gear" id="settingsGearBtn" title="Account settings" hidden>
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Stats (always visible, both tabs) -->
+                <div class="analytics-header-row">
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <div class="stat-box-label">
+                                Product Combos Found
+                                <button type="button" class="info-tooltip">
+                                    <i class="fas fa-circle-info"></i>
+                                    <span class="info-tooltip-bubble">A "combo" (also called a rule) is a pattern found in your sales data — for example, "customers who buy Burger often also buy Coke." This is how many such patterns were found.</span>
+                                </button>
+                            </div>
+                            <div class="stat-box-value" id="statRulesGenerated">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-label">
+                                Transactions
+                                <button type="button" class="info-tooltip">
+                                    <i class="fas fa-circle-info"></i>
+                                    <span class="info-tooltip-bubble">The total number of completed sales (receipts) recorded in your uploaded data.</span>
+                                </button>
+                            </div>
+                            <div class="stat-box-value" id="statTransactions">0</div>
+                        </div>
+                    </div>
+                    <div class="recalculating-badge" id="recalculatingBadge" hidden>
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Recalculating market insights...
+                    </div>
+                </div>
+
+                <!-- Browse vs. All Rules (Product Bundles) tab toggle -->
+                <div class="analytics-tabs">
+                    <button type="button" class="analytics-tab-btn active" id="analyticsTabBrowse">Browse</button>
+                    <button type="button" class="analytics-tab-btn" id="analyticsTabBundles">Product Bundles</button>
+                    <span class="print-report-btn-wrap" title="Loading analytics data..." hidden>
+                        <button type="button" class="btn-primary print-report-btn" id="printReportBtn" title="Loading analytics data..." disabled>
+                            <i class="fas fa-print"></i> Print Report
+                        </button>
+                    </span>
+                </div>
+
+                <!-- BROWSE: Level 1/2/3 drill-down -->
+                <div id="analyticsBrowseView">
+                    <div class="controls-row" style="justify-content: flex-end; position: relative;">
+                        <div class="search-bar">
+                            <input type="text" id="analyticsSearch" placeholder="Search products...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="search-dropdown" id="searchDropdown" hidden></div>
+                    </div>
+
+                    <!-- Level 1: Landing (category grid) -->
+                    <div id="analyticsLevel1">
+                        <div class="category-grid" id="categoryGrid"></div>
+                        <p class="table-empty-message" id="level1EmptyMessage" hidden>No association rules yet. Upload a file to get started.</p>
+                    </div>
+
+                    <!-- Level 2: Category view (product list) -->
+                    <div id="analyticsLevel2" hidden>
+                        <div class="drilldown-subheader">
+                            <button class="back-button back-button-inline" id="level2BackBtn">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <h2 class="drilldown-title" id="level2CategoryTitle"></h2>
+                            <div class="sort-toggle">
+                                <span style="font-size: 12px; margin-right: 8px;">Sort by:</span>
+                                <button class="btn-primary btn-small" id="level2SortToggle">Ascending</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th title="How many product-combination patterns include this product.">Combos Found</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="level2ProductList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Level 3: Product view (rule rows) -->
+                    <div id="analyticsLevel3" hidden>
+                        <div class="drilldown-subheader">
+                            <button class="back-button back-button-inline" id="level3BackBtn">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <h2 class="drilldown-title" id="level3ProductTitle"></h2>
+                            <div class="sort-toggle">
+                                <span style="font-size: 12px; margin-right: 8px;">Sort by chance:</span>
+                                <button class="btn-primary btn-small" id="level3SortToggle">Ascending</button>
+                            </div>
+                        </div>
+                        <div class="product-detail-card">
+                            <div class="product-detail-card-title" id="level3ProductCardTitle"></div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th title="Products that tend to be purchased along with this one, based on your transaction history.">Frequently Bought Together</th>
+                                        <th title="How often customers who bought this combination also bought the item(s) shown, based on your transaction history. (Sometimes called &quot;confidence.&quot;)">Chance of Buying Together</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="level3RuleRows"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALL RULES: flat Product Bundles table, read from persisted Rules/RuleItems -->
+                <div id="analyticsBundlesView" hidden>
+                    <div class="bundles-filters">
+                        <div class="filter-group">
+                            <label for="bundlesMinSupport">
+                                Min Support
+                                <button type="button" class="info-tooltip">
+                                    <i class="fas fa-circle-info"></i>
+                                    <span class="info-tooltip-bubble">Only shows combos that appear in at least this fraction of all transactions. For example, 0.01 means the combo shows up in at least 1% of transactions. Leave blank to show all.</span>
+                                </button>
+                            </label>
+                            <input type="number" id="bundlesMinSupport" min="0" max="1" step="0.001" placeholder="0.000">
+                        </div>
+                        <div class="filter-group">
+                            <label for="bundlesMinConfidence">
+                                Min Confidence
+                                <button type="button" class="info-tooltip">
+                                    <i class="fas fa-circle-info"></i>
+                                    <span class="info-tooltip-bubble">Only shows combos where the second product is bought at least this often whenever the first is bought. For example, 0.5 means at least 50% of the time. Leave blank to show all.</span>
+                                </button>
+                            </label>
+                            <input type="number" id="bundlesMinConfidence" min="0" max="1" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="filter-group">
+                            <label for="bundlesMinLift">
+                                Min Lift
+                                <button type="button" class="info-tooltip">
+                                    <i class="fas fa-circle-info"></i>
+                                    <span class="info-tooltip-bubble">Only shows combos where buying the first product makes buying the second at least this many times more likely than by chance alone. For example, 2 means twice as likely. Leave blank to show all.</span>
+                                </button>
+                            </label>
+                            <input type="number" id="bundlesMinLift" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="sortable-th" data-sort-key="rank" title="Overall ranking by composite score. Ties are broken by Leverage, then Lift, Conviction, Support and Confidence.">Rank</th>
+                                    <th class="sortable-th" data-sort-key="products">Products</th>
+                                    <th class="sortable-th" data-sort-key="support" title="How often this exact combination of products appears across all transactions.">Support</th>
+                                    <th class="sortable-th" data-sort-key="confidence" title="How often the consequent is bought when the antecedent is bought.">Confidence</th>
+                                    <th class="sortable-th" data-sort-key="lift" title="How much more likely the consequent is to be bought with the antecedent than by chance alone.">Lift</th>
+                                    <th class="sortable-th" data-sort-key="leverage" title="The absolute difference between how often these products are actually bought together and what pure chance would predict.">Leverage</th>
+                                    <th class="sortable-th" data-sort-key="conviction" title="How strongly this rule would be violated if the antecedent appeared without the consequent - higher means a stronger dependency.">Conviction</th>
+                                    <th class="sortable-th" data-sort-key="score" title="Composite score from 0 to 1: Support, Confidence, Lift, Leverage and Conviction are each scaled to 0-1 across all rules and weighted equally (20% each).">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bundlesTableBody"></tbody>
+                        </table>
+                    </div>
+                    <p class="table-empty-message" id="bundlesEmptyMessage" hidden>No association rules yet. Upload a file to get started.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Out Confirmation Modal -->
+    <div class="modal-overlay" id="signOutConfirmModal">
+        <div class="modal">
+            <div class="modal-header">Sign Out?</div>
+            <div class="modal-body">
+                <p>Are you sure you want to sign out?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSignOutConfirm()">Cancel</button>
+                <button class="btn-primary" onclick="confirmSignOut()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">Help & Support</div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <h3>Analytics Overview</h3>
+                    <p>Browse products by category to see what tends to sell alongside them, based on combos (patterns) found in your transaction data.</p>
+
+                    <h3>How to Browse</h3>
+                    <ul>
+                        <li><strong>Categories:</strong> Click a category to see its products</li>
+                        <li><strong>Products:</strong> Click a product to see what it's frequently bought with</li>
+                        <li><strong>Search:</strong> Find a product directly by name</li>
+                    </ul>
+
+                    <h3>Reading a Row</h3>
+                    <p>A row like "+ Burger → Coke — 45%" means: when this product is bought together with Burger, Coke is bought 45% of the time.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeHelpModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print-only report, filled by printAnalyticsReport() and cleared after printing -->
+    <div id="printReport" class="print-report" data-logo-src="{{ url_for('static', filename='assets/keat_logo.jpg') }}"></div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+</body>
+</html>

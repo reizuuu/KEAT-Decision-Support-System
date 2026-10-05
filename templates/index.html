@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keat - Decision Support System | Login</title>
+
+    <!-- Favicons -->
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicons/favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='assets/favicons/favicon-48x48.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicons/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
+    <meta name="theme-color" content="#2c1e1d">
+    
+    <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
+
+    <!-- Font Awesome (show/hide password icon) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Section: Login Form -->
+        <div class="login-left">
+            <div class="login-form-wrapper">
+                <h1 class="login-heading">Welcome Back!</h1>
+                <p class="login-subtext">Please enter your details.</p>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Username</label>
+                        <input
+                            type="text"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your username"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-field">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password" aria-pressed="false" title="Show password">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="error-message" id="errorMessage"></div>
+                    
+                    <div class="login-footer">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <label for="rememberMe" style="margin: 0;">Remember me</label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" style="width: 100%;">Sign In</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Right Section: Image & Branding -->
+        <div class="login-right">
+            <img src="{{ url_for('static', filename='assets/keat_logo.jpg') }}" alt="Keat Café" class="login-image">
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

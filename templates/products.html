@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keat - Decision Support System | Products</title>
+
+    <!-- Favicons -->
+    <link rel="icon" href="{{ url_for('static', filename='assets/favicons/favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='assets/favicons/favicon-48x48.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicons/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
+    <meta name="theme-color" content="#2c1e1d">
+    
+    <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo">keat</div>
+            </div>
+            
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="{{ url_for('dashboard') }}" title="Dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('analytics') }}" title="Analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('products') }}" class="active" title="Products">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </a>
+                <a href="{{ url_for('upload') }}" title="Upload">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" id="signOutBtn" title="Sign Out">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </a>
+                <a href="#" id="helpBtn" title="Help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="page-header">
+                <button class="hamburger" id="hamburger" type="button" aria-label="Open menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Products</h1>
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">—</div>
+                        <div class="user-role" id="userRole">—</div>
+                    </div>
+                    <button class="settings-gear" id="settingsGearBtn" title="Account settings" hidden>
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Products Header -->
+                <div class="products-header">
+                    <div class="product-count">
+                        <strong id="productCount">0</strong> Products
+                    </div>
+                    <div class="products-toolbar">
+                        <input 
+                            type="text" 
+                            id="productSearch" 
+                            placeholder="Search products..."
+                        >
+                        <select id="categoryFilter" class="category-filter">
+                            <option value="all">All Categories</option>
+                        </select>
+                        <button class="btn-primary btn-add-product" id="addProductBtn">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Product</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Products Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="4" class="table-empty-message">No products yet — upload a file to get started.</td>
+                            </tr>
+                        </tbody>
+                        <!-- Product Alias (POS/receipt-style short name) is shown as a
+                             muted line under the product name in each row, rendered
+                             by renderProductTable() in products.js - see requirement 1. -->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header" id="productModalTitle">Add Product</div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="productName">Product Name</label>
+                        <input
+                            type="text"
+                            id="productName"
+                            name="productName"
+                            placeholder="Enter product name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productAlias">Product Alias <span style="font-weight:400; color:#888;">(POS/receipt name)</span></label>
+                        <input
+                            type="text"
+                            id="productAlias"
+                            name="productAlias"
+                            placeholder="Enter POS/receipt alias"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <select id="productCategory" name="productCategory" required>
+                            <option value="">Select category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="newCategoryGroup" hidden>
+                        <label for="newCategoryName">New Category Name</label>
+                        <input
+                            type="text"
+                            id="newCategoryName"
+                            name="newCategoryName"
+                            placeholder="Enter new category name"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productPrice">Price <span style="font-weight:400; color:#888;">(optional)</span></label>
+                        <input
+                            type="number"
+                            id="productPrice"
+                            name="productPrice"
+                            placeholder="Leave blank to use average sale price"
+                            step="0.01"
+                            min="0"
+                        >
+                    </div>
+
+                    <input type="hidden" id="productId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeProductModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveProduct()">Add Product</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirm Delete Modal -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal">
+            <div class="modal-header">Delete Product?</div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this product? It will be removed from the catalog and won't be matched in future uploads. Its past sales stay in the dashboard, and adding a product with the same name later brings it back.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeDeleteConfirm()">Cancel</button>
+                <button class="btn-primary" style="background-color: #d32f2f;" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sign Out Confirmation Modal -->
+    <div class="modal-overlay" id="signOutConfirmModal">
+        <div class="modal">
+            <div class="modal-header">Sign Out?</div>
+            <div class="modal-body">
+                <p>Are you sure you want to sign out?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSignOutConfirm()">Cancel</button>
+                <button class="btn-primary" onclick="confirmSignOut()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <div class="modal-header">Help & Support</div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <h3>Products Management</h3>
+                    <p>Manage your café's product catalog efficiently.</p>
+                    
+                    <h3>Actions</h3>
+                    <ul>
+                        <li><strong>Add Product:</strong> Click "Add Product" to create a new item</li>
+                        <li><strong>Edit:</strong> Click the edit icon to modify product details</li>
+                        <li><strong>Delete:</strong> Click the trash icon to remove a product</li>
+                        <li><strong>Search:</strong> Use the search bar to find specific products</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeHelpModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/products.js') }}"></script>
+</body>
+</html>
