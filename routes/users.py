@@ -16,9 +16,6 @@ def get_current_user_account():
 
 @users_bp.put("/api/users/me")
 def update_current_user_account():
-    # Scoped to the session's own user server-side (via current_user()),
-    # regardless of what a request body might otherwise imply - there's no
-    # id in this URL for a caller to substitute another account's into.
     user = current_user()
 
     data = request.get_json(silent=True) or {}

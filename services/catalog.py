@@ -19,27 +19,7 @@ def get_or_create_category(name):
 
 
 def find_active_product_by_alias(raw_name):
-    """Lookup-only match against ACTIVE products, by normalized+lowercased
-    alias - the stable POS identifier, not product_name (staff can edit
-    product_name into something that no longer matches the raw POS text,
-    and uploads must still resolve to the same product). Normalized via
-    normalize_alias() so minor POS formatting drift ("Iced-Tea" vs
-    "iced  tea") still resolves to the same product, case-insensitively so
-    "BT SMASH" and "BT Smash" do too.
-
-    No create-on-miss fallback (this used to be get_or_create_product):
-    once Products is a curated, price-authoritative master catalog (see
-    apply_master_pricing), silently auto-creating a product from a
-    possibly-mistyped CSV cell would create a priceless, uncategorized
-    ad-hoc entry - the right move now is to skip the row and report it
-    (see attach_product_ids), not invent a product.
-
-    Matching only against is_active=True is deliberate: a soft-deleted
-    product shouldn't silently start accepting new transaction rows again
-    just because a re-upload happens to reference it - see
-    routes/products.create_product's explicit revive-on-re-add flow for
-    the only sanctioned way to bring one back.
-    """
+    """Upload matching: active products only, by normalized alias, case-insensitive."""
     normalized_alias = normalize_alias(raw_name).lower()
     return Products.query.filter(
         Products.is_active.is_(True),
@@ -48,24 +28,7 @@ def find_active_product_by_alias(raw_name):
 
 
 def find_product_by_name_or_alias(name, alias, exclude_product_id=None):
-    """Looks up an existing product - ACTIVE OR INACTIVE - matching the
-    submitted name/alias, via the same normalize_alias()-based comparison
-    used everywhere else, checked against both the stored product_name and
-    product_alias (a manual Products-page entry may not always provide an
-    alias, so name-to-name is a legitimate match path here too, unlike the
-    stricter alias-only upload matching above). Used by
-    routes/products.create_product's revive-on-re-add flow (to detect a
-    name/alias collision with a soft-deleted row before creating a new one)
-    and its duplicate-active-product guard, and by update_product (via
-    exclude_product_id, so a product doesn't collide with itself when its
-    own name/alias is left unchanged).
-
-    A full Python-side scan (not a SQL filter) because the comparison needs
-    normalize_alias() applied to the STORED value too (e.g. a stored
-    "Iced-Tea" product_name must match a submitted "Iced Tea"), which a
-    plain SQL func.lower() can't express - fine at this app's catalog scale
-    (a single café's menu, not a large table).
-    """
+    """Any product, active or not, whose name or alias matches name or alias."""
     candidate_keys = {normalize_alias(name).lower()}
     if alias:
         candidate_keys.add(normalize_alias(alias).lower())
@@ -85,23 +48,7 @@ _MASTER_CATALOG_FILENAMES = ("master_catalog.xlsx", "master_catalog.csv")
 
 
 def seed_master_catalog_if_empty():
-    """On a from-scratch (Products-table-empty) database, bulk-populates
-    Category/Products from a master catalog file, if one exists in
-    config.MASTER_CATALOG_DIR. This is a bulk version of what
-    POST /api/products already does per-row (same get_or_create_category +
-    product-creation shape as routes/products.create_product), not a
-    parallel path.
-
-    Checking Products.query.count() == 0 (not Category) is deliberate -
-    it's the one guard that keeps a populated database, including one
-    that's had products edited since, from ever being touched by this on a
-    later restart. A category with zero products isn't meaningfully
-    "seeded" either way, so it isn't the signal to check.
-
-    A missing directory or file is NOT an error - this is an optional
-    from-scratch bootstrap, not a hard requirement to run the app. It's
-    logged and skipped, same as a file that fails to parse.
-    """
+    """Seeds categories and products from the master catalog file when there are no products yet."""
     if Products.query.count() != 0:
         return
 
@@ -142,14 +89,7 @@ def seed_master_catalog_if_empty():
 
         raw_alias = row.get("Product Alias")
         raw_alias = str(raw_alias).strip() if pd.notna(raw_alias) else ""
-        # Normalized (unlike routes/products.create_product's raw-stored
-        # manual alias) because this alias is the master matching key
-        # upload rows get resolved against (find_active_product_by_alias) -
-        # it has to be in the same normalized form that lookup compares
-        # with, regardless of how the catalog file happened to format it.
-        # Falls back to the product name itself when the catalog row leaves
-        # it blank, same as services/migrations._backfill_product_names_and_aliases
-        # already does for pre-existing rows.
+        # uploads match on the alias, so store it normalized. blank -> product name
         stored_alias = normalize_alias(raw_alias) if raw_alias else normalize_alias(name)
 
         raw_price = row.get("Price")

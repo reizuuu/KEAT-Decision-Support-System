@@ -68,20 +68,9 @@ def build_dashboard_payload(dataframe):
     }
 
     total_transactions = int(dataframe["Receipt ID"].nunique())
-    # "Average Number of Products per Transaction" = total quantity sold /
-    # total transactions, over whatever `dataframe` already is - same as
-    # every other stat/chart here, filtering (including the product
-    # checkbox filter) happens once, upstream, in
-    # build_transactions_dataframe(). A product filter restricts rows to
-    # just the checked product(s) (consistent with how the category filter
-    # works), so this becomes "average quantity of the checked product(s)
-    # per transaction they appear in" - still a real, meaningful number,
-    # not hidden/disabled in that case.
     average_products_per_transaction = (
         json_number(dataframe["Quantity"].sum() / total_transactions) if total_transactions else 0
     )
-    # Currency counterpart of the above: total revenue / total transactions,
-    # over the same already-filtered dataframe - same division-by-zero guard.
     average_sales_per_transaction = (
         json_number(dataframe["Total"].sum() / total_transactions) if total_transactions else 0
     )

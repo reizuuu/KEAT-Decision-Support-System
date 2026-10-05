@@ -1,7 +1,4 @@
-/* ====================================
-   KEAT DECISION SUPPORT SYSTEM
-   Global Styles & CSS Variables
-   ==================================== */
+/* Keat styles */
 
 :root {
     /* Color Palette - Coffee/Café Inspired */
@@ -39,9 +36,7 @@
     --border-medium: 2px solid var(--border-color);
 }
 
-/* ====================================
-   GLOBAL & RESET
-   ==================================== */
+/* --- base --- */
 
 * {
     margin: 0;
@@ -60,9 +55,7 @@ body {
     line-height: 1.6;
 }
 
-/* ====================================
-   TYPOGRAPHY
-   ==================================== */
+/* --- typography --- */
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
@@ -107,9 +100,7 @@ p {
     letter-spacing: 2px;
 }
 
-/* ====================================
-   LINKS & BUTTONS
-   ==================================== */
+/* --- links and buttons --- */
 
 a {
     color: var(--brown-dark);
@@ -161,9 +152,7 @@ button {
     font-size: 12px;
 }
 
-/* ====================================
-   FORMS
-   ==================================== */
+/* --- forms --- */
 
 input, select, textarea {
     font-family: var(--font-primary);
@@ -204,10 +193,7 @@ label {
     margin-top: var(--spacing-sm);
 }
 
-/* Same small-note placement convention as .form-note, but for a note that
-   needs to actually stand out (e.g. the upload success modal's list of
-   catalog-unmatched products) - reuses the app's existing warning/error
-   red (see .error-message, .notification.error) rather than a new color. */
+/* like .form-note but in the warning red */
 .form-note-warning {
     font-size: 12px;
     font-weight: 600;
@@ -244,9 +230,7 @@ input[type="checkbox"] {
     display: block;
 }
 
-/* ====================================
-   LAYOUT: LOGIN PAGE
-   ==================================== */
+/* --- login page --- */
 
 .login-container {
     display: flex;
@@ -285,9 +269,7 @@ input[type="checkbox"] {
     width: 100%;
 }
 
-/* Username and password boxes share one fixed width (the width they
-   already had), so the eye button's extra padding can't make the password
-   box wider than the username box. */
+/* fixed width so the eye button padding doesn't widen the password box */
 .login-form input[type="text"],
 .login-form input[type="password"] {
     width: 210px;
@@ -380,9 +362,7 @@ input[type="checkbox"] {
     }
 }
 
-/* ====================================
-   LAYOUT: AUTHENTICATED PAGES
-   ==================================== */
+/* --- app layout --- */
 
 .app-container {
     display: flex;
@@ -496,9 +476,7 @@ input[type="checkbox"] {
         transition: transform 0.3s ease;
     }
 
-    /* The huge spread shadow doubles as a backdrop dimming the page behind
-       the open menu - no extra markup needed, and clicks on it still reach
-       the document so initializeHamburger()'s click-outside close works. */
+    /* the big shadow doubles as the backdrop, clicks still reach the document */
     .sidebar.active {
         transform: translateX(0);
         box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.4);
@@ -506,9 +484,7 @@ input[type="checkbox"] {
 }
 
 /* MAIN CONTENT */
-/* min-width: 0 lets the column shrink below its content's width, so a wide
-   table or chart scrolls inside its own box instead of pushing the page
-   sideways. */
+/* min-width: 0 so wide tables/charts scroll inside instead of widening the page */
 .main-content {
     flex: 1;
     min-width: 0;
@@ -598,9 +574,7 @@ input[type="checkbox"] {
     background-color: var(--cream);
 }
 
-/* ====================================
-   DASHBOARD COMPONENTS
-   ==================================== */
+/* --- dashboard --- */
 
 .filter-bar {
     display: flex;
@@ -620,9 +594,7 @@ input[type="checkbox"] {
     margin-bottom: 0;
 }
 
-/* .info-tooltip defaults to a light icon color for dark backgrounds
-   (stat cards/boxes) - filter labels sit on the page's light background,
-   so the icon needs a dark, visible color here instead. */
+/* dark icon on the light filter bar */
 .filter-group label .info-tooltip {
     color: var(--brown-medium);
     opacity: 0.8;
@@ -800,20 +772,13 @@ input[type="checkbox"] {
     opacity: 0.7;
 }
 
-/* Marks a rule's confidence as stale-pending-remine after a product
-   delete's instant prune structurally edited it (see
-   services/persistence.prune_rules_for_product / Rules.is_approximate).
-   A native `title` attribute (not the .info-tooltip click-modal component)
-   gives an actual hover tooltip, matching what this marker calls for. */
+/* rule metrics are approximate until the background remine finishes */
 .approximate-marker {
     cursor: help;
     font-style: italic;
     opacity: 0.75;
 }
 
-/* Click opens a modal popup (see openInfoPopup() in script.js) rather than
-   a hover bubble - avoids the bubble getting clipped near the top of a
-   scrollable .page-content, and works the same on touch as on desktop. */
 .info-tooltip {
     position: relative;
     display: inline-flex;
@@ -843,7 +808,7 @@ input[type="checkbox"] {
     font-size: 13px;
 }
 
-/* Holds the explanation text read by openInfoPopup() - never shown inline. */
+/* read by openInfoPopup(), never shown inline */
 .info-tooltip-bubble {
     display: none;
 }
@@ -888,16 +853,13 @@ input[type="checkbox"] {
     gap: var(--spacing-lg);
 }
 
-/* Grid items default to min-width: auto, so a chart canvas's last drawn
-   width would keep its column from shrinking and push the page sideways. */
+/* let chart columns shrink */
 .charts-row > *,
 .stats-grid > * {
     min-width: 0;
 }
 
-/* ====================================
-   ANALYTICS COMPONENTS
-   ==================================== */
+/* --- analytics --- */
 
 .analytics-header-row {
     display: flex;
@@ -945,10 +907,6 @@ input[type="checkbox"] {
     font-weight: 700;
 }
 
-/* Shown on the Analytics page while a background remine is still in
-   flight (see static/js/analytics.js's recalculating-badge polling) -
-   an amber "in progress" tone, distinct from the app's existing
-   success/error notification colors since this isn't either. */
 .recalculating-badge {
     display: flex;
     align-items: center;
@@ -962,11 +920,7 @@ input[type="checkbox"] {
     padding: var(--spacing-sm) var(--spacing-md);
 }
 
-/* The class rule above sets display explicitly, which (at equal
-   specificity) overrides the browser's own [hidden] { display: none }
-   UA-stylesheet rule - same gotcha already handled for .settings-gear
-   above. Without this, toggling badge.hidden in JS has no visual effect
-   and the badge stays visible/spinning permanently, dataset or not. */
+/* display above beats the [hidden] UA rule, so restore it */
 .recalculating-badge[hidden] {
     display: none;
 }
@@ -1033,14 +987,8 @@ input[type="checkbox"] {
     color: var(--text-light);
 }
 
-/* ====================================
-   PRINT REPORT BUTTON (Dashboard filter bar + Analytics tabs row)
-   ==================================== */
+/* --- print report button --- */
 
-/* Pushed to the right end of its flex row; when the Dashboard filter bar
-   wraps on narrow screens it simply lands right-aligned on its own line.
-   justify-content: flex-end lines the button up with the other filter
-   controls (below their labels) rather than with the labels. */
 .filter-group-print {
     min-width: auto;
     margin-left: auto;
@@ -1052,7 +1000,7 @@ input[type="checkbox"] {
     display: inline-flex;
 }
 
-/* Same [hidden] override gotcha as .settings-gear / .recalculating-badge. */
+/* same [hidden] fix as above */
 .print-report-btn-wrap[hidden] {
     display: none;
 }
@@ -1072,8 +1020,7 @@ input[type="checkbox"] {
     cursor: not-allowed;
 }
 
-/* Only ever filled while printing (see printReportHtml() in script.js) and
-   only shown by the @media print rules at the end of this file. */
+/* only shown by the print styles */
 .print-report {
     display: none;
 }
@@ -1120,8 +1067,7 @@ th.sortable-th:hover {
     background-color: var(--hover-brown);
 }
 
-/* Analytics drill-down: search-as-you-type dropdown, anchored under the
-   shared search bar in .analytics-header-row's .controls-row. */
+/* search dropdown */
 .search-dropdown {
     position: absolute;
     top: calc(100% + var(--spacing-sm));
@@ -1257,8 +1203,6 @@ th.sortable-th:hover {
     border: 1px solid #E8E4DB;
 }
 
-/* Level 2 & 3 results: center columns and give rows more presence so a
-   full-width table doesn't read as having a big empty gap in the middle. */
 #analyticsLevel2 th,
 #analyticsLevel2 td,
 #analyticsLevel3 td {
@@ -1267,8 +1211,6 @@ th.sortable-th:hover {
     padding: var(--spacing-xl) calc(var(--spacing-xl) + var(--spacing-lg));
 }
 
-/* Cap and center the level 2/3 result boxes instead of letting them
-   stretch the full page width. */
 #analyticsLevel2 .table-container {
     max-width: 960px;
     margin: 0 auto var(--spacing-lg);
@@ -1279,12 +1221,9 @@ th.sortable-th:hover {
     margin: 0 auto;
 }
 
-/* ====================================
-   TABLES
-   ==================================== */
+/* --- tables --- */
 
-/* Scrolls sideways at every width - the 8-column Product Bundles table
-   overflows well before phone sizes. */
+/* the 8-column bundles table needs to scroll at any width */
 .table-container {
     background-color: var(--text-light);
     border: var(--border-thin);
@@ -1348,9 +1287,7 @@ tr:hover {
     }
 }
 
-/* ====================================
-   PRODUCTS PAGE
-   ==================================== */
+/* --- products page --- */
 
 .products-header {
     display: flex;
@@ -1402,9 +1339,7 @@ tr:hover {
     margin-top: 2px;
 }
 
-/* ====================================
-   UPLOAD PAGE
-   ==================================== */
+/* --- upload page --- */
 
 .upload-container {
     background-color: var(--text-light);
@@ -1520,9 +1455,7 @@ tr:hover {
     }
 }
 
-/* ====================================
-   MODALS
-   ==================================== */
+/* --- modals --- */
 
 .modal-overlay {
     display: none;
@@ -1548,10 +1481,7 @@ tr:hover {
     padding: var(--spacing-xl);
     max-width: 400px;
     width: 90%;
-    /* Caps the modal to the viewport and turns it into a flex column so a
-       long body (e.g. the upload success modal's unmatched-products list)
-       scrolls within itself instead of overflowing off-screen, while the
-       header/footer stay put. */
+    /* long modal bodies scroll, header and footer stay put */
     max-height: 85vh;
     display: flex;
     flex-direction: column;
@@ -1569,8 +1499,6 @@ tr:hover {
 .modal-body {
     margin-bottom: var(--spacing-lg);
     overflow-y: auto;
-    /* Lets the flex item actually shrink below its content's natural
-       height instead of forcing the modal to grow past max-height. */
     min-height: 0;
 }
 
@@ -1589,9 +1517,7 @@ tr:hover {
     order: 2;
 }
 
-/* ====================================
-   HELP MODAL
-   ==================================== */
+/* --- help modal --- */
 
 .help-content {
     font-size: 13px;
@@ -1617,9 +1543,7 @@ tr:hover {
     margin-bottom: var(--spacing-sm);
 }
 
-/* ====================================
-   NOTIFICATIONS
-   ==================================== */
+/* --- notifications --- */
 
 .notification {
     position: fixed;
@@ -1654,9 +1578,7 @@ tr:hover {
     background-color: #2e7d32;
 }
 
-/* ====================================
-   RESPONSIVE DESIGN
-   ==================================== */
+/* --- responsive --- */
 
 @media (max-width: 1200px) {
     .stats-grid {
@@ -1744,8 +1666,7 @@ tr:hover {
         width: 100%;
     }
 
-    /* Slide-out menu: half the screen, links as icon + label rows so each
-       selection box encloses its whole label. */
+    /* slide-out menu, half the screen */
     .sidebar {
         width: 50%;
         min-width: 200px;
@@ -1811,8 +1732,7 @@ tr:hover {
         font-size: 16px;
     }
 
-    /* Dashboard filter bar: each control gets a usable full-width row,
-       dates side by side. */
+    /* filter bar: one control per row, dates side by side */
     .filter-bar {
         gap: var(--spacing-md);
     }
@@ -2052,9 +1972,7 @@ tr:hover {
     }
 }
 
-/* ====================================
-   UTILITY CLASSES
-   ==================================== */
+/* --- utilities --- */
 
 .hidden {
     display: none !important;
@@ -2104,23 +2022,10 @@ tr:hover {
     gap: var(--spacing-lg);
 }
 
-/* ====================================
-   PRINT (Dashboard/Analytics "Print Report")
-   ==================================== */
+/* --- print --- */
 
-/* The app shell is swapped out for #printReport only while <body> has
-   .printing-report (added by printReportHtml() in script.js for the length
-   of one print), so a plain Ctrl+P elsewhere prints the page as before.
-   Hiding every other direct child of <body> covers the sidebar/header/filters
-   (.app-container) plus anything appended to <body> at runtime: modals,
-   toasts, flatpickr calendars.
-
-   The A4 page setup is a *named* page (`page: report`) used only by
-   #printReport, rather than a bare @page rule, so printing any other page
-   (Products, Upload, ...) keeps the browser's default paper and margins.
-   Landscape is a second named page, switched on by body.print-landscape
-   (the Product Bundles table). Page numbers use @page margin boxes, which
-   not every browser supports - they're simply absent where unsupported. */
+/* While body has .printing-report, only #printReport prints. The report uses named
+   pages so printing other pages keeps the browser defaults. */
 @page report {
     size: A4;
     margin: 15mm;
@@ -2146,8 +2051,7 @@ tr:hover {
 }
 
 @media print {
-    /* html carries the cream page background too (see GLOBAL & RESET) and
-       would show through below the report's last row. */
+    /* the cream background would show below the last row */
     html:has(> body.printing-report),
     body.printing-report {
         height: auto;
@@ -2173,8 +2077,7 @@ tr:hover {
         font-size: 9pt;
         line-height: 1.4;
         color: #000;
-        /* Keep chart colours, swatches and shaded boxes when printing
-           (browsers drop background colours by default). Inherited. */
+        /* keep background colors when printing */
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
@@ -2318,8 +2221,7 @@ tr:hover {
         text-align: center;
     }
 
-    /* Header cells of numeric columns wrap normally (long labels like
-       "Avg Sales per Transaction"); only the numbers themselves stay on one line. */
+    /* numeric headers wrap, the numbers don't */
     .print-report .report-table th.report-num {
         white-space: normal;
     }
@@ -2338,7 +2240,7 @@ tr:hover {
         width: 30%;
     }
 
-    /* ---- Dashboard report charts (inline SVG, see dashboard.js) ---- */
+    /* dashboard report charts */
     .print-report .report-chart-card {
         border: 0.75pt solid #dedbd3;
         border-radius: 6pt;
@@ -2400,8 +2302,7 @@ tr:hover {
         margin-right: 4pt;
     }
 
-    /* Pie: an SVG for the slices and leader lines, with HTML labels placed
-       over it (padding-top sets the height from the SVG's aspect ratio). */
+    /* svg slices with html labels on top, padding-top sets the height */
     .print-report .report-pie {
         position: relative;
         height: 0;

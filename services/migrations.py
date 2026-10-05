@@ -1,10 +1,6 @@
-"""Startup schema migrations for the existing instance/keat.sqlite3 file.
+"""Adds columns that were introduced after the first databases were created.
 
-db.create_all() only creates tables that don't exist yet - it never adds
-columns to a table that's already there. Since this prototype ships with a
-pre-existing sqlite file, new columns (Products.product_alias,
-UserAccounts.role) need an explicit ALTER TABLE + backfill so upgrading
-doesn't require deleting the database.
+db.create_all() never alters an existing table, so new columns get an ALTER TABLE and a backfill.
 """
 
 from sqlalchemy import func, inspect, text
@@ -51,14 +47,7 @@ def _backfill_product_names_and_aliases():
 
 
 def _merge_duplicate_products():
-    """Collapses products that only differ by casing, e.g. "BT SMASH" and
-    "BT Smash" ending up as two separate rows because get_or_create_product
-    (services/persistence.py) used to match product_alias case-sensitively.
-    _backfill_product_names_and_aliases above already title-cases every
-    product_name, so duplicates now share an identical name - group on that,
-    keep the oldest row per group, and move its sales/rule history over
-    before dropping the rest.
-    """
+    """Merges products that only differed by casing, keeping the oldest row."""
     products_by_name = {}
     for product in Products.query.order_by(Products.product_id).all():
         products_by_name.setdefault(product.product_name, []).append(product)
@@ -82,20 +71,12 @@ def _merge_duplicate_products():
 
 
 def _backfill_user_roles():
-    # role is purely informational now (see models.UserAccounts.role) - any
-    # pre-existing account missing one just gets the same default new
-    # accounts get.
     for user in UserAccounts.query.filter((UserAccounts.role.is_(None)) | (UserAccounts.role == "")).all():
         user.role = "user"
 
 
 def _backfill_product_prices():
-    # Products.price is new and starts NULL for every existing row. Seed it
-    # from each product's average observed RawTransaction.price - the same
-    # number GET /api/products was already displaying via that fallback -
-    # so upgrading doesn't change what anyone sees; it's now just editable.
-    # Products with no sales history yet are left NULL (displayed as ₱0.00
-    # until someone sets a price or real sales come in).
+    # same average price the products page already showed
     averages = dict(
         db.session.query(RawTransaction.product_id, func.avg(RawTransaction.price)).group_by(
             RawTransaction.product_id
@@ -107,27 +88,15 @@ def _backfill_product_prices():
 
 
 def _backfill_product_active_flag():
-    # is_active is new and starts NULL for every existing row (raw ALTER
-    # TABLE ADD COLUMN, no default enforced at the SQLite level) - every
-    # pre-existing product was, by definition, an active one, so it
-    # backfills to True rather than being silently soft-deleted.
     for product in Products.query.filter(Products.is_active.is_(None)).all():
         product.is_active = True
 
 
 def _backfill_rule_approximate_flag():
-    # Same reasoning as above: a rule that existed before this column did
-    # was mined normally, not structurally patched, so it backfills to
-    # False (not approximate).
     for rule in Rules.query.filter(Rules.is_approximate.is_(None)).all():
         rule.is_approximate = False
 
 
 def _backfill_upload_log_unmatched_flag():
-    # Every pre-existing UploadLog row predates the "skip unmatched
-    # products" feature - back when auto-create meant no row was ever
-    # skipped for a catalog reason, so False (fully matched) is the
-    # correct/safe backfill regardless of what that upload actually
-    # contained.
     for upload_log in UploadLog.query.filter(UploadLog.had_unmatched_rows.is_(None)).all():
         upload_log.had_unmatched_rows = False

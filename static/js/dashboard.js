@@ -1,7 +1,4 @@
-/* ====================================
-   KEAT DECISION SUPPORT SYSTEM
-   Dashboard JavaScript
-   ==================================== */
+// Dashboard page
 
 let orderSummaryChart = null;
 let bestSellingChart = null;
@@ -12,48 +9,27 @@ let topProductsMonthlyChart = null;
 let transactionsByDayChart = null;
 let transactionsByHourChart = null;
 
-// "Transaction Volume for the Top 10 Products per Month" reorders its
-// datasets (which product-series appears first) rather than sorting a
-// single axis - defaults to descending total volume on load and is reset
-// to descending after every filter-driven refresh (see loadDashboardResults).
+// top 10 products chart sort, reset to desc on every refresh
 let topProductsSortDirection = 'desc';
 let lastTopProductsMonthlyData = null;
 
 let currentCategoryOptions = [];
 let currentProductOptions = [];
-// Empty = "All Categories"/"All Products" (no filter). Populated from
-// checked boxes in the Category/Product checkbox-dropdown filters.
+// empty = all
 let selectedCategories = [];
 let selectedProducts = [];
-// Substring filter for the Product dropdown's search box - narrows which
-// checkboxes render, but never touches selectedProducts (a checked product
-// stays checked/counted even while scrolled out of view by the search term).
 let productFilterSearchTerm = '';
 
-// flatpickr instances for the Start/End Date filters (see
-// initDateFilterPickers) - kept so quick-filter clicks can push a date into
-// the picker's own API instead of just setting the underlying input's
-// value, which wouldn't update what's on screen.
 let startDatePicker = null;
 let endDatePicker = null;
 
-// The last /api/results payload the dashboard actually rendered (null = no
-// data for those filters), plus a description of the filters that request
-// was sent with - captured before the fetch rather than read at click time,
-// so a printout can never pair one request's numbers with another's
-// filters. The Print Report button builds from these instead of refetching,
-// so the printout always matches what's on screen.
+// what's on screen, so the printed report matches it
 let lastDashboardResults = null;
 let lastDashboardFilterLines = [];
 
-// Longer selections are cut to this many names + "+N more" in the printed
-// report's "Filters applied" block.
 const REPORT_FILTER_LIST_LIMIT = 10;
 
-// Ordered so no two array-adjacent entries share a hue family (adjacency is
-// always defined by final index position here, regardless of how a chart
-// sorts/filters its datasets before calling colorizeDatasets) - hues are
-// spaced roughly evenly around the wheel and alternate warm/cool.
+// neighbouring colors are different hues
 const CHART_PALETTE = [
     '#2a78d6', // blue
     '#eb6834', // orange
@@ -67,13 +43,7 @@ const CHART_PALETTE = [
     '#5D4E37'  // brown
 ];
 
-// "Transaction Volume for the Top 10 Products per Month" chart's own fixed
-// palette (a specific requested set of colors, not the general CHART_PALETTE
-// above - other charts that share colorizeDatasets() are unaffected). Same
-// spacing logic as CHART_PALETTE: the 5 "similar shade" pairs here (red/pink,
-// orange/yellow, teal/green, blue/purple, brown/charcoal) are each placed
-// exactly 5 slots apart - the maximum possible separation in a 10-color
-// array - so no two array-adjacent entries are a shade of the same hue.
+// top 10 products chart, similar shades are 5 slots apart
 const TOP_PRODUCTS_PALETTE = [
     '#2A9D8F', // teal
     '#E63946', // red
@@ -125,14 +95,10 @@ async function initializeDashboardPage() {
     wireTimePeriodControls();
     wireCategoryProductControls();
     wirePrintReportButton(printDashboardReport);
-    // No filters are selected on a fresh page load, so the three requests
-    // don't depend on each other - run them in parallel instead of in turn.
     await Promise.all([loadCategoryOptions(), loadProductOptions(), loadDashboardResults()]);
 }
 
-// ====================================
-// TIME PERIOD: START/END DATE + QUICK FILTERS
-// ====================================
+// --- date filters ---
 
 function wireTimePeriodControls() {
     const startInput = document.getElementById('startDateFilter');
@@ -143,9 +109,7 @@ function wireTimePeriodControls() {
 
     quickButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Clicking the already-highlighted slicer turns it off instead
-            // of reapplying the same range - clears both date inputs back
-            // to "all dates" rather than leaving the filter stuck on.
+            // clicking the active filter again clears it
             if (this.classList.contains('active')) {
                 clearTimePeriodFilter();
                 return;
@@ -166,15 +130,7 @@ function wireTimePeriodControls() {
     });
 }
 
-// The date filters are rendered as flatpickr-driven text inputs so their
-// displayed format (mm/dd/yyyy) is controlled by this code rather than the
-// visitor's browser/OS locale - a native <input type="date">'s displayed
-// format can't be forced that way. altInput:true keeps the original input
-// (#startDateFilter/#endDateFilter) holding the plain ISO yyyy-mm-dd value
-// that the rest of this file already reads/writes, while a separate visible
-// input shows altFormat - so wireTimePeriodControls()/computeQuickRange()/
-// toDateInputValue()/syncQuickFilterHighlight()/loadDashboardResults() don't
-// need to change what they read or write, only how it's displayed.
+// flatpickr for a fixed mm/dd/yyyy display, the inputs still hold yyyy-mm-dd
 function initDateFilterPickers() {
     const startInput = document.getElementById('startDateFilter');
     const endInput = document.getElementById('endDateFilter');
@@ -195,12 +151,7 @@ function initDateFilterPickers() {
     if (endInput) endDatePicker = flatpickr(endInput, options);
 }
 
-// Pushes an ISO yyyy-mm-dd value into a date filter, going through the
-// flatpickr instance's own API (when there is one) so the visible altInput
-// updates too - setting `.value` directly on the picker's original,
-// now-hidden input would leave the on-screen mm/dd/yyyy text stale. `false`
-// skips flatpickr's onChange, since callers already trigger the resulting
-// refresh themselves.
+// set through flatpickr so the visible input updates too
 function setDateFilterValue(input, picker, isoValue) {
     if (picker) {
         if (isoValue) {
@@ -222,10 +173,7 @@ function clearTimePeriodFilter() {
     loadDashboardResults();
 }
 
-// Decision (documented, not guessed silently): "This Week" is Monday-start
-// (Monday through today), and "This Year" is Jan 1 - Dec 31 of the current
-// year (not Jan 1 - today) - the simpler definition, harmless since future
-// dates simply won't match any data yet.
+// week starts Monday, year is Jan 1 - Dec 31
 function computeQuickRange(range) {
     const today = new Date();
     if (range === 'today') {
@@ -253,9 +201,6 @@ function toDateInputValue(date) {
     return `${year}-${month}-${day}`;
 }
 
-// Highlights whichever quick filter's computed range matches the current
-// date inputs; if the user has hand-edited the dates away from every
-// preset, "Custom Range" becomes the highlighted one instead.
 function syncQuickFilterHighlight() {
     const startInput = document.getElementById('startDateFilter');
     const endInput = document.getElementById('endDateFilter');
@@ -286,9 +231,7 @@ function setActiveQuickFilter(range) {
     });
 }
 
-// ====================================
-// CATEGORY / PRODUCT CASCADING FILTERS
-// ====================================
+// --- category / product filters ---
 
 function wireCategoryProductControls() {
     wireCategoryFilterDropdown();
@@ -315,8 +258,6 @@ function wireCategoryFilterDropdown() {
 
     if (allCheckbox) {
         allCheckbox.addEventListener('change', async function() {
-            // "All Categories" acts as a reset, not an independent toggle -
-            // checking it clears every individual selection.
             selectedCategories = [];
             renderCategoryFilterList();
             updateCategoryFilterToggleLabel();
@@ -347,8 +288,6 @@ function wireProductFilterDropdown() {
 
     if (allCheckbox) {
         allCheckbox.addEventListener('change', function() {
-            // "All Products" acts as a reset, not an independent toggle -
-            // checking it clears every individual selection.
             selectedProducts = [];
             renderProductFilterList();
             updateProductFilterToggleLabel();
@@ -375,8 +314,6 @@ async function loadCategoryOptions() {
         console.warn('Unable to load categories.', error);
     }
 
-    // Drop any previously-checked category that no longer exists, rather
-    // than leaving an invalid selection.
     selectedCategories = selectedCategories.filter(name => currentCategoryOptions.includes(name));
 
     renderCategoryFilterList();
@@ -413,8 +350,6 @@ function renderCategoryFilterList() {
             }
             if (allCheckbox) allCheckbox.checked = selectedCategories.length === 0;
             updateCategoryFilterToggleLabel();
-            // Re-scopes the Product dropdown to the union of products
-            // across every selected category before refreshing results.
             await loadProductOptions();
             loadDashboardResults();
         });
@@ -450,14 +385,8 @@ async function loadProductOptions() {
         currentProductOptions = [];
     }
 
-    // Drop any previously-checked product that's no longer valid under the
-    // newly-scoped category selection, rather than leaving an invalid
-    // selection.
     selectedProducts = selectedProducts.filter(name => currentProductOptions.includes(name));
 
-    // The search box narrows a list scoped to a particular category
-    // selection - once that scope changes, a stale search term could hide
-    // every option in the new list, so it's cleared along with it.
     productFilterSearchTerm = '';
     const searchInput = document.getElementById('productFilterSearch');
     if (searchInput) searchInput.value = '';
@@ -472,9 +401,7 @@ function renderProductFilterList() {
     if (!list) return;
 
     const term = productFilterSearchTerm.trim().toLowerCase();
-    // Filtering only changes which checkboxes render - selectedProducts is
-    // never touched here, so a checked product stays checked/counted even
-    // while scrolled out of view by the search term.
+    // search only hides rows, checked products stay selected
     const visibleOptions = term
         ? currentProductOptions.filter(name => name.toLowerCase().includes(term))
         : currentProductOptions;
@@ -536,8 +463,6 @@ async function loadDashboardResults() {
     const query = params.toString();
     const filterLines = buildDashboardReportFilterLines();
 
-    // Disabled while the request is in flight, so a click can't print the
-    // previous filters' numbers while the screen is about to change.
     setPrintButtonState(document.getElementById('printReportBtn'), false, 'Loading dashboard data...');
 
     let results = null;
@@ -551,8 +476,6 @@ async function loadDashboardResults() {
         console.warn('Unable to load uploaded results.', error);
     }
 
-    // Every filter-driven refresh resets the products chart back to its
-    // descending default, per requirement 5.
     topProductsSortDirection = 'desc';
     const sortToggle = document.getElementById('topProductsSortToggle');
     if (sortToggle) sortToggle.textContent = 'Descending';
@@ -583,10 +506,7 @@ function initializeDashboardCharts(results) {
     initializeTransactionsByHourChart(dashboard && dashboard.transactionsByHour);
 }
 
-// yyyy-mm-dd -> "Month D, YYYY". Split/parsed manually (not `new Date(iso)`)
-// so the displayed date can't drift a day off from what's actually stored,
-// which parsing an ISO date string as UTC and then formatting in a
-// negative-UTC-offset local timezone would otherwise risk.
+// parsed by hand, new Date(iso) can shift the day in some timezones
 function formatDisplayDate(isoValue) {
     if (!isoValue) return '';
     const [year, month, day] = isoValue.split('-').map(Number);
@@ -594,21 +514,12 @@ function formatDisplayDate(isoValue) {
     return `${MONTH_NAMES[month - 1]} ${day}, ${year}`;
 }
 
-// Friendly phrasing for whichever quick-filter range the current dates
-// happen to match - reuses computeQuickRange() (the same source of truth
-// syncQuickFilterHighlight() checks against) rather than tracking a
-// separate "which button is active" flag.
 const QUICK_FILTER_SUBTEXT_LABELS = {
     today: 'today',
     week: 'this week',
     year: 'this year'
 };
 
-// Describes the Start/End Date filter currently in effect, for the stat
-// cards' subtext. No filter at all -> "All time"; a range matching one of
-// the quick filters -> its friendly label ("today"/"this week"/"this
-// year"), whether it got there via the button or a hand-typed match;
-// anything else (a genuine custom range) -> the explicit date-to-date text.
 function buildDateRangeSubtext() {
     const startInput = document.getElementById('startDateFilter');
     const endInput = document.getElementById('endDateFilter');
@@ -623,9 +534,6 @@ function buildDateRangeSubtext() {
             return computed && computed.start === start && computed.end === end;
         });
         if (matchedRange) return `As of ${QUICK_FILTER_SUBTEXT_LABELS[matchedRange]}`;
-        // A single-day range (start and end are the same date, picked by
-        // hand rather than via the Today button) reads as one date, not a
-        // "day to itself" range.
         if (start === end) return `As of ${formatDisplayDate(start)}`;
         return `As of ${formatDisplayDate(start)} to ${formatDisplayDate(end)}`;
     }
@@ -640,8 +548,6 @@ function updateDashboardStats(results) {
     const productsPerTransactionEl = document.getElementById('statAverageProductsPerTransaction');
     const tooltipTextEl = document.getElementById('avgProductsTooltipText');
 
-    // Independent of whether there's any data to show - the subtext
-    // describes what date range was REQUESTED, not what was found.
     const dateRangeText = buildDateRangeSubtext();
     document.querySelectorAll('.stat-card-date-range').forEach(el => {
         el.textContent = dateRangeText;
@@ -660,20 +566,11 @@ function updateDashboardStats(results) {
     if (revenueEl) revenueEl.textContent = formatCurrency(dashboard.totalRevenue);
     if (transactionsEl) transactionsEl.textContent = formatNumber(dashboard.totalTransactions);
     if (salesPerTransactionEl) salesPerTransactionEl.textContent = formatCurrency(dashboard.averageSalesPerTransaction);
-    // The card shows a bucketed range (e.g. "2-3") rather than the raw
-    // decimal - display-only, the API value stays precise (see
-    // formatAverageProductsRange) since buildAverageProductsTooltip below
-    // still needs to compare the exact number against the 2-3 reference
-    // range.
     if (productsPerTransactionEl) productsPerTransactionEl.textContent = formatAverageProductsRange(dashboard.averageProductsPerTransaction);
     if (tooltipTextEl) tooltipTextEl.textContent = buildAverageProductsTooltip(dashboard.averageProductsPerTransaction);
 }
 
-// Buckets the precise average into a "low-high" display range, e.g. 2.71 ->
-// "2-3". Boundary decision (documented since it's a judgment call, not an
-// obvious one): an exact integer average buckets into the range it's the
-// FLOOR of, so exactly 3.0 displays "3-4", not "2-3" - consistent with
-// every other value in [3, 4) also showing "3-4".
+// 2.71 -> "2-3", exactly 3 -> "3-4"
 function formatAverageProductsRange(value) {
     if (value === null || value === undefined || isNaN(value)) return '—';
     const low = Math.floor(value);
@@ -681,10 +578,6 @@ function formatAverageProductsRange(value) {
     return `${low}-${high}`;
 }
 
-// "Most cafés see 2-3 items per transaction" (see the stat card's own
-// label) is the reference range this message is built against: below it,
-// within it, or above it changes the message so the tooltip reacts to the
-// actual computed average instead of always showing the same static line.
 function buildAverageProductsTooltip(value) {
     if (value === null || value === undefined || isNaN(value)) {
         return 'Customers purchase 2–3 different items per transaction on average at most cafés. Track this to see if upsells or combos are landing.';
@@ -700,24 +593,14 @@ function buildAverageProductsTooltip(value) {
     return `Customers are purchasing an average of ${formatted} items per transaction. This is above the typical 2–3 range. Upsells and combos are clearly landing.`;
 }
 
-// ====================================
-// PRINT REPORT
-// ====================================
-
-/* Built from the same payload.dashboard object the on-screen charts were
-   drawn from (lastDashboardResults), so the report carries the same numbers.
-   Its charts are redrawn as inline SVG (see "Printed-report charts" below)
-   rather than copied from the canvases. Shared building blocks (header,
-   table, print/cleanup) live in script.js. */
+// --- print report ---
 
 function printDashboardReport() {
     if (!lastDashboardResults || !lastDashboardResults.dashboard) return;
     printReportHtml(buildDashboardReportHtml(lastDashboardResults.dashboard, lastDashboardFilterLines));
 }
 
-// Same wording as the stat cards' date subtext (buildDateRangeSubtext), but a
-// relative phrase like "As of this week" gets its actual dates appended, since
-// a printout is read later, when "this week" means something else.
+// relative ranges like "this week" get the real dates added
 function buildDashboardReportFilterLines() {
     const startInput = document.getElementById('startDateFilter');
     const endInput = document.getElementById('endDateFilter');
@@ -745,9 +628,7 @@ function summarizeReportList(names) {
     return `${shown} +${names.length - REPORT_FILTER_LIST_LIMIT} more`;
 }
 
-// ====================================
-// EMPTY STATE HELPERS
-// ====================================
+// --- charts ---
 
 function showChartEmptyState(canvas, message) {
     canvas.style.display = 'none';
@@ -780,9 +661,7 @@ function colorizeDatasets(datasets, palette) {
     }));
 }
 
-// ====================================
-// CHART 4 — Transaction Volume per Month (line, order count)
-// ====================================
+// orders per month
 
 function initializeOrderSummaryChart(realData) {
     const ctx = document.getElementById('orderSummaryChart');
@@ -852,9 +731,7 @@ function initializeOrderSummaryChart(realData) {
     });
 }
 
-// ====================================
-// CHART 2 — Top 10 Best-Selling Menu Items by Sales Volume (vertical column)
-// ====================================
+// top 10 best sellers
 
 function initializeBestSellingChart(realData) {
     const ctx = document.getElementById('bestSellingChart');
@@ -914,9 +791,7 @@ function initializeBestSellingChart(realData) {
     });
 }
 
-// ====================================
-// CHART 5 — Transaction Volume of each Category per Month (clustered column)
-// ====================================
+// category volume per month
 
 function initializeTransactionVolumeChart(realData) {
     const ctx = document.getElementById('transactionVolumeChart');
@@ -977,9 +852,7 @@ function initializeTransactionVolumeChart(realData) {
     });
 }
 
-// ====================================
-// CHART 1 — Distribution of Café Revenue Across Product Categories (vertical column)
-// ====================================
+// revenue by category
 
 function initializeRevenueByCategoryChart(realData) {
     const ctx = document.getElementById('revenueByCategoryChart');
@@ -1045,9 +918,7 @@ function initializeRevenueByCategoryChart(realData) {
     });
 }
 
-// ====================================
-// CHART 3 — Trajectory of Monthly Sales (line, revenue)
-// ====================================
+// monthly sales
 
 function initializeMonthlySalesTrendChart(realData) {
     const ctx = document.getElementById('monthlySalesTrendChart');
@@ -1122,9 +993,7 @@ function initializeMonthlySalesTrendChart(realData) {
     });
 }
 
-// ====================================
-// CHART 6 — Transaction Volume for the Top 10 Products per Month (clustered column)
-// ====================================
+// top 10 products per month
 
 function initializeTopProductsMonthlyChart(realData) {
     lastTopProductsMonthlyData = realData;
@@ -1143,10 +1012,6 @@ function ensureTopProductsSortToggleWired() {
     });
 }
 
-// Reorders which product-series (dataset) appears first, by each product's
-// total volume across all months - the clustered chart has one series per
-// product rather than a single value axis, so "sorting" means reordering
-// datasets rather than reordering points along an axis.
 function sortProductDatasets(datasets, direction) {
     const withTotals = datasets.map(dataset => ({
         dataset,
@@ -1218,9 +1083,7 @@ function renderTopProductsMonthlyChart() {
     });
 }
 
-// ====================================
-// CHART 7 — Distribution of Total Customer Transactions by Day of the Week (area)
-// ====================================
+// transactions by day of week
 
 function initializeTransactionsByDayChart(realData) {
     const ctx = document.getElementById('transactionsByDayChart');
@@ -1288,9 +1151,7 @@ function initializeTransactionsByDayChart(realData) {
     });
 }
 
-// ====================================
-// CHART 8 — Distribution of Customer Transactions by Hour of the Day (line)
-// ====================================
+// transactions by hour
 
 function initializeTransactionsByHourChart(realData) {
     const ctx = document.getElementById('transactionsByHourChart');
@@ -1364,9 +1225,3 @@ function initializeTransactionsByHourChart(realData) {
         }
     });
 }
-
-// Handle window resize to redraw charts
-window.addEventListener('resize', function() {
-    // Charts should automatically resize with Chart.js responsive option
-    // but we can force a redraw if needed
-});

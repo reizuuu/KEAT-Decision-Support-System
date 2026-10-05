@@ -16,9 +16,6 @@ results_bp = Blueprint("results", __name__)
 
 @results_bp.get("/api/results")
 def get_results():
-    """Dashboard data for the given filters. Analytics has its own endpoint
-    (/api/analytics) so neither page pays for the other's data.
-    """
     start_date = request.args.get("start_date") or ""
     end_date = request.args.get("end_date") or ""
     categories = sorted(request.args.getlist("category"))
@@ -38,10 +35,6 @@ def get_results():
 
 @results_bp.get("/api/analytics")
 def get_analytics():
-    """Analytics page data - always the full accumulated dataset, never the
-    dashboard filters.
-    """
-
     def build():
         payload = build_analytics_browse_payload(count_receipts())
         payload["bundles"] = build_rule_bundles_payload()
@@ -52,11 +45,6 @@ def get_analytics():
 
 @results_bp.get("/api/analytics/status")
 def get_analytics_status():
-    """Cheap poll target for the Analytics page's "recalculating" badge -
-    just whether any Rules row is still flagged is_approximate (stale
-    pending a background remine, see services/persistence.
-    prune_rules_for_product), rather than recomputing/returning the full
-    analytics payload on every poll tick.
-    """
+    # polled by the analytics page while a remine is running
     has_approximate_rules = Rules.query.filter_by(is_approximate=True).first() is not None
     return jsonify({"hasApproximateRules": has_approximate_rules}), 200

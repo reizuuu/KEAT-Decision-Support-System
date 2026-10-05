@@ -1,7 +1,4 @@
-/* ====================================
-   KEAT DECISION SUPPORT SYSTEM
-   Upload JavaScript
-   ==================================== */
+// Upload page
 
 let selectedFile = null;
 
@@ -15,9 +12,7 @@ function initializeUploadPage() {
     initializeUploadButton();
 }
 
-// ====================================
-// DRAG AND DROP
-// ====================================
+// --- drag and drop ---
 
 function initializeDragDrop() {
     const dropZone = document.getElementById('dropZone');
@@ -25,7 +20,6 @@ function initializeDragDrop() {
 
     if (!dropZone) return;
 
-    // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
     });
@@ -35,7 +29,6 @@ function initializeDragDrop() {
         e.stopPropagation();
     }
 
-    // Highlight drop zone when item is dragged over it
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, highlight, false);
     });
@@ -54,7 +47,6 @@ function initializeDragDrop() {
         dropZone.style.borderColor = '';
     }
 
-    // Handle dropped files
     dropZone.addEventListener('drop', handleDrop, false);
 
     function handleDrop(e) {
@@ -72,13 +64,11 @@ function handleFiles(files) {
 
     const file = fileList[0];
 
-    // Validate file type
     if (!isValidFileType(file)) {
         showNotification('Invalid file type. Please upload CSV or XLSX file.', 'error');
         return;
     }
 
-    // Validate file size (50 MB)
     const maxSize = 50 * 1024 * 1024; // 50 MB
     if (file.size > maxSize) {
         showNotification('File size exceeds 50 MB limit.', 'error');
@@ -93,12 +83,10 @@ function isValidFileType(file) {
     const validTypes = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
     const validExtensions = ['.csv', '.xlsx'];
 
-    // Check MIME type
     if (validTypes.includes(file.type)) {
         return true;
     }
 
-    // Check file extension
     const fileName = file.name.toLowerCase();
     return validExtensions.some(ext => fileName.endsWith(ext));
 }
@@ -112,9 +100,6 @@ function updateFileSelected() {
     }
 }
 
-// ====================================
-// BROWSE BUTTON
-// ====================================
 
 function initializeBrowseButton() {
     const browseBtn = document.getElementById('browseBtn');
@@ -133,9 +118,7 @@ function initializeBrowseButton() {
     }
 }
 
-// ====================================
-// UPLOAD BUTTON
-// ====================================
+// --- upload ---
 
 function initializeUploadButton() {
     const uploadBtn = document.getElementById('uploadBtn');
@@ -153,7 +136,6 @@ function performUpload() {
         return;
     }
 
-    // Show progress modal
     openModal('uploadProgressModal');
 
     uploadFile();
@@ -199,7 +181,6 @@ function showUploadSuccess(payload) {
 
     openModal('uploadSuccessModal');
 
-    // Reset file selection
     selectedFile = null;
     const fileSelected = document.getElementById('fileSelected');
     if (fileSelected) {
@@ -248,7 +229,6 @@ function buildUploadSuccessMessage(payload) {
 function closeUploadSuccess() {
     closeModal('uploadSuccessModal');
 
-    // Reset progress
     document.getElementById('progressBar').style.width = '0%';
     document.getElementById('uploadProgress').textContent = '0%';
 

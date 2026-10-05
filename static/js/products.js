@@ -1,7 +1,4 @@
-/* ====================================
-   KEAT DECISION SUPPORT SYSTEM
-   Products JavaScript
-   ==================================== */
+// Products page
 
 let currentEditingProductId = null;
 let currentSearchTerm = '';
@@ -42,9 +39,7 @@ async function loadAllCategoriesForFilter() {
 }
 
 async function loadProductsFromServer() {
-    // Category filtering is server-side (?category=), so the list this page
-    // holds is already scoped to the selected category; text search is then
-    // applied on top of that, client-side, in getVisibleProducts().
+    // category filter is server-side, text search is client-side
     const params = currentCategoryFilter !== 'all' ? `?category=${encodeURIComponent(currentCategoryFilter)}` : '';
     try {
         const response = await fetch(`/api/products${params}`);
@@ -69,9 +64,6 @@ function updateProductCount() {
 }
 
 function getVisibleProducts() {
-    // Category filtering already happened server-side (see
-    // loadProductsFromServer) - only the text search applies here, on top
-    // of whatever category-scoped list is currently loaded.
     const searchLower = currentSearchTerm.toLowerCase();
     return window.mockData.products
         .filter(product => {
@@ -89,9 +81,6 @@ function renderProductTable() {
     const tableBody = document.getElementById('productsTableBody');
     if (!tableBody) return;
 
-    // Alphabetical order holds here regardless of API ordering or future
-    // client-side edits/additions, and both the text search and category
-    // filter compose together via getVisibleProducts().
     const products = getVisibleProducts();
 
     if (products.length === 0) {
@@ -168,12 +157,7 @@ function hideNewCategoryInput() {
     if (input) input.value = '';
 }
 
-// Re-fetches categories fresh (rather than relying on the dropdown built
-// once at page load) so a category created since this page loaded - e.g.
-// via an upload in another tab, or another admin - is available before the
-// modal opens. Fixes the "blank category on edit" bug: a native <select>
-// silently leaves .value unset if the target string isn't already an
-// <option>, which happened whenever the cached dropdown was stale.
+// refetch so a category added since page load shows up, otherwise the select stays blank
 async function refreshProductCategoryOptions() {
     try {
         const response = await fetch('/api/categories');
@@ -197,9 +181,7 @@ function setProductCategorySelectValue(categoryName) {
     select.value = categoryName;
     if (select.value === categoryName) return;
 
-    // Category was renamed/removed elsewhere since the refresh above - don't
-    // fail quietly a second time; insert a temporary option for the
-    // product's current value instead of leaving the dropdown blank.
+    // category disappeared in the meantime, add a temporary option for it
     const option = document.createElement('option');
     option.value = categoryName;
     option.textContent = categoryName;
@@ -350,9 +332,7 @@ async function saveProduct() {
         product_name: productName,
         product_alias: productAlias,
         category: productCategory,
-        // Blank stays unset server-side (falls back to the average sale
-        // price) rather than being sent as 0, which would look like a
-        // deliberate "free" price.
+        // blank = no price, not 0
         price: productPrice ? parseFloat(productPrice) : null,
     };
 

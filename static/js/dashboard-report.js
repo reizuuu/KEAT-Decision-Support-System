@@ -1,5 +1,4 @@
-// Four pages: summary + revenue pie; top 10 + monthly chart; category
-// volume + day of week; hour of day (the page breaks are on the sections).
+// Printed dashboard report: html with inline svg charts, four pages
 function buildDashboardReportHtml(dashboard, filterLines) {
     const categoryOrder = getReportCategoryOrder(dashboard);
     const categoryColors = new Map(
@@ -21,8 +20,7 @@ function buildDashboardReportHtml(dashboard, filterLines) {
     ].join('');
 }
 
-// The payload uses null for a NaN/infinite aggregate (see
-// services/aggregation._number) - counted as 0 in report math.
+// null (NaN/inf from the api) counts as 0
 function reportNumber(value) {
     return Number(value) || 0;
 }
@@ -40,9 +38,7 @@ function hasReportSeries(series) {
     return Boolean(series && series.labels && series.labels.length > 0);
 }
 
-// Largest value in a {labels, data} series, or null if nothing is above 0
-// (so the matching "Key highlights" line is skipped rather than printing a
-// meaningless "top" of all zeros). Ties go to the first label.
+// largest value, or null if nothing is above 0. ties go to the first label
 function findReportSeriesMax(series) {
     if (!hasReportSeries(series)) return null;
     let best = null;
@@ -71,8 +67,7 @@ function formatReportHourRange(label) {
     return `${formatReportClock(hour, 0)} – ${formatReportClock(hour, 59)}`;
 }
 
-// Chart point/caption amounts are rounded to whole pesos ("₱980,480") - the
-// cents would only crowd the labels.
+// whole pesos, cents just crowd the labels
 function formatReportPesoWhole(value) {
     return '₱' + Math.round(value).toLocaleString('en-US');
 }
@@ -93,16 +88,9 @@ function reportStrong(text) {
 
 const REPORT_NO_DATA_TEXT = 'No data for the selected filters.';
 
-/* ---------- Printed-report charts ----------
-   The report draws its own charts as inline SVG rather than reusing the
-   on-screen Chart.js canvases: SVG stays sharp on paper and is ready the
-   moment the HTML is inserted, with no canvas re-render to wait for before
-   window.print(). Text that needs to wrap or line up with HTML (legends,
-   pie labels) is HTML positioned over the SVG. */
+// --- charts: svg instead of the canvases, sharper in print and no re-render to wait for ---
 
-// Category colours for the report, assigned by revenue rank so the pie and
-// the stacked bars always agree (the top-earning category is blue, the
-// second orange, ...).
+// assigned by revenue rank so the pie and stacked bars match
 const REPORT_CATEGORY_PALETTE = [
     '#2a78d6', // blue
     '#eb6834', // orange
@@ -118,7 +106,6 @@ const REPORT_CATEGORY_PALETTE = [
 const REPORT_REVENUE_LINE_COLOR = '#d9531e';
 const REPORT_TRANSACTION_BAR_COLOR = '#85b4ee';
 
-// Hour-of-day grid: Fewer -> More transactions.
 const REPORT_HEAT_STOPS = [
     [0, '#eef0ec'],
     [0.3, '#bcd5f4'],
@@ -126,10 +113,7 @@ const REPORT_HEAT_STOPS = [
     [1, '#0d2e61']
 ];
 
-// Opening hours the Hour of Day grid is laid out around (2 PM - 11:59 PM),
-// split into three shifts. Hours outside them are folded into the nearest
-// shift: from REPORT_EARLY_MORNING_END up to opening counts as "before
-// opening", midnight up to REPORT_EARLY_MORNING_END as "after closing".
+// opening hours (2 PM - 11:59 PM) in three shifts, other hours go to the nearest shift
 const REPORT_SHIFTS = [
     { name: 'Opening Hours', hours: [14, 15, 16], outside: 'before' },
     { name: 'Mid Shift', hours: [17, 18, 19, 20] },
@@ -139,12 +123,10 @@ const REPORT_OPENING_HOUR = 14;
 const REPORT_LAST_OPEN_HOUR = 23;
 const REPORT_EARLY_MORNING_END = 6;
 
-// Words that describe a size or serving rather than a dish, skipped when
-// looking for a common theme among the best sellers.
+// serving words, skipped when looking for a common dish name
 const REPORT_THEME_STOP_WORDS = new Set(['and', 'with', 'the', 'for', 'solo', 'sharing', 'set', 'meal', 'combo']);
 
-// Rounds a rough axis step up to 1, 2, 2.5 or 5 x 10^n. `integer` skips the
-// 2.5 step below 10, for axes that count whole transactions/items.
+// round up to 1, 2, 2.5 or 5 x 10^n. integer axes skip 2.5
 function niceReportStep(rough, integer) {
     if (!(rough > 0)) return 1;
     const magnitude = Math.pow(10, Math.floor(Math.log10(rough)));
@@ -220,8 +202,7 @@ function renderReportSummaryCallout(html) {
     `;
 }
 
-// Categories ordered by revenue (highest first), then any category that
-// only appears in the per-month volumes - the order colours are handed out in.
+// revenue order, then categories that only show up in the monthly volumes
 function getReportCategoryOrder(dashboard) {
     const revenue = dashboard.revenueByCategory;
     const ordered = hasReportSeries(revenue)
@@ -288,8 +269,7 @@ function buildReportHighlightsSection(dashboard, months) {
     return renderReportSection('Key Highlights', list);
 }
 
-// Moves label y-positions (sorted top to bottom) apart so each is at least
-// `gap` below the one above, staying within [top, bottom].
+// push labels apart so they're at least gap apart, within [top, bottom]
 function spreadReportLabels(items, top, bottom, gap) {
     items.forEach((item, index) => {
         const floor = index === 0 ? top : items[index - 1].y + gap;
@@ -327,9 +307,7 @@ function buildReportRevenueByCategorySection(series, categoryColors) {
         return slice;
     });
 
-    // Labels sit in a column on each side of the pie, level with their slice
-    // and then spread apart so neighbours never overlap - the chart grows
-    // taller when one side has more labels than fit.
+    // label columns on both sides, spread so they don't overlap
     const width = 800;
     const radius = 100;
     const labelGap = 38;
@@ -362,9 +340,6 @@ function buildReportRevenueByCategorySection(series, categoryColors) {
             return `<path d="M${cx},${cy} L${reportRound(x1)},${reportRound(y1)} A${radius},${radius} 0 ${largeArc} 1 ${reportRound(x2)},${reportRound(y2)} Z" fill="${slice.color}" stroke="#fff" stroke-width="1.5"/>`;
         }).join('');
 
-    // Each line leaves its slice radially, then runs straight to its label -
-    // a label that was spread up or down never pulls its line back across
-    // the pie.
     const leaderLines = labels.map(label => {
         const direction = label.side === 'right' ? 1 : -1;
         const [startX, startY] = pointAt(label.slice.mid, radius);
@@ -396,9 +371,7 @@ function buildReportRevenueByCategorySection(series, categoryColors) {
     return renderReportSection(title, chart + renderReportChartCaption(caption));
 }
 
-// The most common dish word across the best sellers ("Tenders" in "Tenders
-// Rice", "Tenders Solo", ...), if at least 3 of them share it. Ties go to
-// the word that appears highest in the ranking.
+// most common dish word in the best sellers (e.g. "Tenders"), if 3+ share it
 function findReportNameTheme(names) {
     const counts = new Map();
     names.forEach(name => {
@@ -481,10 +454,7 @@ function buildReportBestSellingSection(series, totalItems) {
     );
 }
 
-// Revenue (monthlySalesTrend) and transaction counts (orderSummary) are two
-// series over the same month labels (both built from the same month list in
-// services/aggregation), so they're combined by index into one chart: revenue
-// as a line on the left axis, transactions as bars on the right.
+// revenue line (left axis) + transaction bars (right axis), same month labels
 function buildReportMonthlySummarySection(revenueSeries, orderSeries) {
     const title = 'Monthly Summary';
     if (!hasReportSeries(revenueSeries)) return renderReportSection(title, renderReportMessage(REPORT_NO_DATA_TEXT));
@@ -501,13 +471,11 @@ function buildReportMonthlySummarySection(revenueSeries, orderSeries) {
     const plotHeight = plot.bottom - plot.top;
     const band = (plot.right - plot.left) / count;
     const centerX = index => plot.left + band * (index + 0.5);
-    // Labels shrink as months are added, and are left off past 18 months
-    // where they'd overlap.
+    // smaller labels as months are added, none past 18 months
     const valueFont = count <= 12 ? 11 : count <= 18 ? 8.5 : 0;
     const axisFont = count <= 12 ? 11 : 9;
 
-    // The right axis is stretched to about twice the busiest month so the
-    // bars stay in the lower half and the revenue line rides above them.
+    // bars stay in the lower half, the line rides above them
     const maxRevenue = Math.max(...revenue);
     const leftStep = niceReportStep(maxRevenue / 4);
     const tickCount = Math.max(1, Math.ceil(maxRevenue / leftStep));
@@ -539,8 +507,7 @@ function buildReportMonthlySummarySection(revenueSeries, orderSeries) {
         const y = yLeft(value);
         parts.push(`<circle cx="${reportRound(centerX(index))}" cy="${reportRound(y)}" r="4" fill="${REPORT_REVENUE_LINE_COLOR}"/>`);
         if (!valueFont) return;
-        // A revenue point sitting on its bar would put the two labels on top
-        // of each other - lift the revenue label clear of the bar's.
+        // keep the revenue label clear of the bar label
         let labelY = y - 10;
         if (Math.abs(labelY - barLabelY[index]) < valueFont + 3) labelY = barLabelY[index] - (valueFont + 3);
         parts.push(reportSvgText(centerX(index), labelY, formatReportPesoWhole(value), { anchor: 'middle', size: valueFont, weight: 600 }));
@@ -593,8 +560,7 @@ function buildReportMonthlySummarySection(revenueSeries, orderSeries) {
     return renderReportSection(title, chart + renderReportChartCaption(caption));
 }
 
-// Items sold per category per month (services/aggregation sums "Quantity"),
-// as stacked bars in revenue order - the same order and colours as the pie.
+// items sold per category per month, stacked in the same order/colors as the pie
 function buildReportCategoryPerMonthSection(series, categoryOrder, categoryColors) {
     const title = 'Transaction Volume of Each Category per Month';
     const noData = () => renderReportSection(title, renderReportMessage(REPORT_NO_DATA_TEXT), 'report-section-break');
@@ -625,7 +591,6 @@ function buildReportCategoryPerMonthSection(series, categoryOrder, categoryColor
     const centerX = index => plot.left + band * (index + 0.5);
     const barWidth = Math.min(band * 0.72, 64);
     const axisFont = count <= 12 ? 11 : 9;
-    // Segment labels need room: a wide-enough bar and a tall-enough slice.
     const segmentFont = barWidth >= 26 ? 9.5 : 0;
 
     const maxTotal = Math.max(...monthTotals);
@@ -661,7 +626,6 @@ function buildReportCategoryPerMonthSection(series, categoryOrder, categoryColor
         parts.push(reportSvgMonthLabel(centerX(index), plot.bottom + 18, label, axisFont));
     });
 
-    // Legend reads top of the stack first, like the bars themselves.
     const legend = `<div class="report-chart-legend">${datasets.slice().reverse().map(dataset => `
         <span class="report-legend-item">
             <span class="report-swatch" style="background:${dataset.color}"></span>
@@ -724,7 +688,6 @@ function buildReportDayOfWeekSection(series) {
     const title = 'Transactions by Day of Week';
     if (!hasReportSeries(series)) return renderReportSection(title, renderReportMessage(REPORT_NO_DATA_TEXT));
 
-    // The payload's labels are already Monday -> Sunday.
     const total = sumReportValues(series.data);
     const table = renderReportTable({
         columns: ['Day', 'Transactions', '% of Total'],
@@ -739,8 +702,7 @@ function buildReportDayOfWeekSection(series) {
     return renderReportSection(title, table + (narrative ? renderReportSummaryCallout(narrative) : ''));
 }
 
-// One box per opening hour, grouped into the three REPORT_SHIFTS rows; the
-// hours outside opening time are folded into a dashed box at each end.
+// one box per opening hour by shift, the hours outside are dashed boxes at each end
 function buildReportHourOfDaySection(series, months) {
     const title = 'Transactions by Hour of Day';
     const sectionClass = 'report-section-break';

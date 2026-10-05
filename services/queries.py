@@ -6,11 +6,8 @@ from services.numbers import json_number
 
 
 def build_full_transactions_dataframe():
-    """All RawTransaction rows joined to Products, shaped for
-    services/mining.py: one "Receipt ID" (globally-unique, composed from
-    year/month/day/receipt_id since receipt_id itself only resets daily)
-    and "Product Name" column. Also returns a product_name -> product_id
-    map, used to persist RuleItems.
+    """All stored rows as (Receipt ID, Product Name) for mining, plus a name -> product_id map.
+    Receipt ids restart daily, so the date is part of the key.
     """
     rows = (
         db.session.query(
@@ -40,10 +37,7 @@ def build_full_transactions_dataframe():
 
 
 def count_receipts():
-    """Number of distinct receipts - the same figure as
-    build_full_transactions_dataframe()["Receipt ID"].nunique(), counted in
-    SQL rather than by loading every row.
-    """
+    """Same count as the unique Receipt IDs above, done in SQL."""
     return (
         db.session.query(
             RawTransaction.year,
@@ -58,19 +52,7 @@ def count_receipts():
 
 
 def build_transactions_dataframe(start_date=None, end_date=None, categories=None, products=None):
-    """RawTransaction joined to Products/Category, shaped to match the old
-    in-memory contract that services/aggregation.py expects: Receipt ID,
-    Date, Product Name, Category, Quantity, Price, Total, and (when present)
-    Timestamp - aggregation.py's hour-of-day chart already treats Timestamp
-    as optional and falls back cleanly when every value is null.
-
-    categories/products are pushed down to the join (same lookup
-    routes/products.py's get_products() already does - both are lists,
-    matching the dashboard's checkbox-based multi-select, and an empty/None
-    list means no filter on that dimension); start_date/end_date are applied
-    afterwards against the constructed "Date" column, since the requested
-    range doesn't necessarily align to whole months.
-    """
+    """Stored transactions in the shape aggregation.py expects. Empty filter lists mean no filter."""
     query = (
         db.session.query(
             RawTransaction.receipt_id,
@@ -136,27 +118,8 @@ def build_transactions_dataframe(start_date=None, end_date=None, categories=None
 
 
 def build_analytics_browse_payload(transaction_count):
-    """Builds the category -> antecedent-product -> rule-row structure the
-    /analytics page's three-level drill-down (landing -> category ->
-    product) renders directly from, computed from the persisted
-    Rules/RuleItems tables (mining only happens on upload - see
-    remine_rules above).
-
-    A multi-item-antecedent rule is attributed to EVERY product in its
-    antecedent set, each getting its own row filed under its own
-    category/product - not just a special case, this falls straight out of
-    looping over each rule's antecedent product ids below. That's also what
-    keeps a product's Level 2 "N generated rule(s)" count and its Level 3 row
-    count guaranteed equal: both come from the same rows list built here (one
-    row per (antecedent product, rule) pair - never more than one per pair,
-    since a rule's antecedent is a set and a product can't appear in it
-    twice), so there's no separate counting logic that could drift out of
-    sync with what's actually rendered.
-
-    Open question ("show empty categories?"): resolved automatically by
-    construction rather than by a filter - a category only appears here at
-    all if one of its products is some rule's antecedent, since that's the
-    only way a product enters this structure.
+    """category -> product -> rules tree for the analytics page. A rule is listed under each
+    of its antecedent products.
     """
     rules = Rules.query.all()
     if not rules:
@@ -221,12 +184,6 @@ def build_analytics_browse_payload(transaction_count):
 
 
 def build_rule_bundles_payload():
-    """Flat "Product Bundles" table - one row per persisted rule, sourced
-    from the Rules/RuleItems tables rather than re-running compute_rules()
-    (mining only happens on upload - see remine_rules above, reads should
-    never re-mine). Mirrors the shape services/mining.py's now-dead
-    build_analytics_payload()/"bundles" used, just read from the DB.
-    """
     rules = Rules.query.all()
     if not rules:
         return []
@@ -245,8 +202,7 @@ def build_rule_bundles_payload():
         bundles.append(
             {
                 "products": f"{', '.join(antecedent_names)} → {', '.join(consequent_names)}",
-                # Raw floats (conviction may be inf) - rank_rules scores and
-                # tie-breaks on these before they're made JSON-safe below.
+                # raw floats for ranking, conviction can be inf
                 "support": float(rule.support),
                 "confidence": float(rule.confidence),
                 "lift": float(rule.lift),

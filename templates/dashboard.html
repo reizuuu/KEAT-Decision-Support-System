@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keat - Decision Support System | Dashboard</title>
 
-    <!-- Favicons -->
     <link rel="icon" href="{{ url_for('static', filename='assets/favicons/favicon.ico') }}" sizes="any">
     <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='assets/favicons/favicon-48x48.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicons/favicon-32x32.png') }}">
@@ -14,20 +13,11 @@
     <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
     <meta name="theme-color" content="#2c1e1d">
 
-    <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
-
-    <!-- Chart.js -->
     <script src="{{ url_for('static', filename='vendors/chartjs/chart.min.js') }}"></script>
-
-    <!-- Flatpickr (date inputs with a locale-independent display format) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/flatpickr/flatpickr.min.css') }}">
     <script src="{{ url_for('static', filename='vendors/flatpickr/flatpickr.min.js') }}"></script>
-
-    <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -69,9 +59,7 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Header -->
             <header class="page-header">
                 <button class="hamburger" id="hamburger" type="button" aria-label="Open menu">
                     <i class="fas fa-bars"></i>
@@ -89,7 +77,6 @@
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="page-content">
                 <!-- Filter Bar -->
                 <div class="filter-bar">
@@ -294,10 +281,9 @@
         </div>
     </div>
 
-    <!-- Print-only report, filled by printDashboardReport() and cleared after printing -->
+    <!-- filled in when printing -->
     <div id="printReport" class="print-report" data-logo-src="{{ url_for('static', filename='assets/keat_logo.jpg') }}"></div>
 
-    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dashboard-report.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>

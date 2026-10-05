@@ -8,7 +8,6 @@ from services.queries import build_full_transactions_dataframe
 
 
 def replace_rules(rules_dataframe, product_id_by_name):
-    """Clears Rules + RuleItems and inserts the freshly-mined set."""
     RuleItems.query.delete()
     Rules.query.delete()
 
@@ -41,20 +40,7 @@ def replace_rules(rules_dataframe, product_id_by_name):
 
 
 def remine_rules():
-    """Re-mines association rules over the full accumulated dataset and
-    replaces Rules/RuleItems, so recommendations reflect everything ingested
-    so far - not just the file that was just uploaded.
-
-    Deliberately asymmetric with the dashboard: a soft-deleted product's
-    PAST transactions still count everywhere in dashboard totals
-    (build_transactions_dataframe/build_full_transactions_dataframe never
-    filter on is_active - see services/aggregation.py), but they're
-    excluded from what gets fed into compute_rules() here, so a deleted
-    product stops contributing to NEWLY mined association rules. This
-    filter is applied at this call site rather than inside
-    build_full_transactions_dataframe() itself, since that function is also
-    used (unfiltered, on purpose) for the analytics transaction count.
-    """
+    """Re-mines rules over all stored transactions. Inactive products are left out."""
     dataframe, product_id_by_name = build_full_transactions_dataframe()
     if dataframe.empty:
         return replace_rules(pd.DataFrame(), product_id_by_name)
@@ -71,53 +57,24 @@ def remine_rules():
 
 
 def _remine_rules_in_background(app):
-    # A background thread can't reuse the request's app context/db.session -
-    # Flask-SQLAlchemy's session is tied to the context it was created in.
-    # Pushing a fresh app context here (from the real Flask app object, not
-    # the `current_app` proxy) is what makes remine_rules()'s db.session
-    # calls work safely off the request thread.
+    # the thread needs its own app context for db.session
     with app.app_context():
         try:
             remine_rules()
             db.session.commit()
         except Exception:
-            # No caller to propagate to - this runs unsupervised on a
-            # daemon thread, well after the triggering request already
-            # responded. Rolling back at least restores the last-known-good
-            # state instead of leaving the session half-mutated.
             db.session.rollback()
             app.logger.exception("Background remine failed.")
 
 
 def start_background_remine(app):
-    """Kicks off a full re-mine on a daemon thread and returns immediately -
-    used after any change that should regenerate association rules (a
-    product added, soft-deleted, or a new dataset uploaded) without making
-    the triggering request wait for mlxtend to finish. `app` must be the
-    real Flask app object (current_app._get_current_object()), not the
-    current_app proxy, since the background thread needs it to push its own
-    app context.
-    """
+    """Remines on a daemon thread. app must be the real app object, not the current_app proxy."""
     threading.Thread(target=_remine_rules_in_background, args=(app,), daemon=True).start()
 
 
 def prune_rules_for_product(product_id):
-    """Synchronous, structural-only edit of the EXISTING Rules/RuleItems
-    rows when a product is soft-deleted - NOT a re-mine (that's the
-    caller's job, in the background - see routes/products.delete_product).
-    Does not commit; the caller controls the transaction boundary.
-
-    For every rule referencing product_id (via RuleItems):
-      - it's the SOLE antecedent, or the SOLE consequent -> delete the
-        whole rule (cascading its RuleItems) - there's no meaningful rule
-        left without that side.
-      - it's one of SEVERAL items on whichever side it's on -> delete just
-        that one RuleItems row, leaving the rest of the set intact, and
-        flag the rule is_approximate=True - its stored support/confidence/
-        lift/leverage/conviction were computed for the original, now-
-        changed itemset and are stale until the background remine
-        recomputes them from scratch. Rules this function deletes outright
-        are never flagged - they're just gone.
+    """Removes a deleted product from existing rules without re-mining. Rules where it was
+    the only item on a side are deleted, the rest are flagged approximate. Doesn't commit.
     """
     affected_rule_ids = {
         item.rule_id for item in RuleItems.query.filter_by(product_id=product_id).all()

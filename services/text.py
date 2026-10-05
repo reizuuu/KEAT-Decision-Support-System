@@ -2,10 +2,7 @@ import re
 
 
 def to_title_case(name: str) -> str:
-    """Title-cases a product name for display: normalizes whitespace and
-    capitalizes each word, without mangling existing hyphens/numerals
-    (e.g. "iced-tea 16oz" -> "Iced-Tea 16Oz", "bbq rice bowl" -> "Bbq Rice Bowl").
-    """
+    """Display name, e.g. "iced-tea 16oz" -> "Iced-Tea 16Oz"."""
     normalized = re.sub(r"\s+", " ", (name or "").strip())
     if not normalized:
         return normalized
@@ -16,11 +13,6 @@ def to_title_case(name: str) -> str:
 
 
 def normalize_alias(name: str) -> str:
-    """Normalizes a raw POS product name into a stable matching/storage key:
-    strips leading/trailing whitespace, replaces hyphens with spaces, and
-    collapses repeated internal whitespace - so "Iced-Tea", "iced tea", and
-    " Iced   Tea " all resolve to the same key instead of drifting into
-    separate near-duplicate products across uploads.
-    """
+    """Matching key for POS names, e.g. " Iced-Tea  16oz" -> "Iced Tea 16oz". Callers lowercase it."""
     normalized = (name or "").replace("-", " ")
     return re.sub(r"\s+", " ", normalized).strip()

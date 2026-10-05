@@ -1,9 +1,4 @@
-/* ====================================
-   KEAT DECISION SUPPORT SYSTEM
-   Analytics JavaScript - three-level drill-down
-   (Level 1: categories -> Level 2: products in a category ->
-    Level 3: one product's rule rows)
-   ==================================== */
+// Analytics page: browse drill-down and product bundles table
 
 let analyticsData = { rulesGenerated: 0, transactions: 0, categories: [], bundles: [] };
 // productName -> { product, category, ruleCount, rows }
@@ -12,28 +7,20 @@ let productIndex = new Map();
 let currentLevel = 1;
 let currentCategory = null;
 let currentProduct = null;
-// Which view Level 3 should return to: null = Level 1, otherwise a category name.
+// where level 3's back button goes: null = level 1, else a category name
 let level3CameFromCategory = null;
 let level2SortDirection = 'asc';
 let level2FilterTerm = '';
-// Sorts Level 3's rule rows by confidencePercent ("Chance of Buying
-// Together") - independent of level2SortDirection, which sorts Level 2's
-// product list alphabetically instead.
 let level3SortDirection = 'asc';
 
-// This is a second, separate view from the Level 1/2/3 drill-down (see
-// showAnalyticsTab) - a flat table of every persisted rule, independently
-// sortable/filterable, rather than the browse hierarchy above.
 let bundlesData = [];
-// Default order is the backend's composite-score rank (services/mining.rank_rules).
+// default order is the backend's rank
 let bundlesSortKey = 'rank';
 let bundlesSortDirection = 'asc';
-// 'browse' or 'bundles' - which tab is showing. The Print Report button
-// prints whichever table this (plus currentLevel, for Browse) points at.
+// 'browse' or 'bundles'
 let currentAnalyticsTab = 'browse';
 
-// Plain column names for the bundles table - the on-screen headers get a
-// ▲/▼ appended (updateBundlesSortIndicators), the printed ones don't.
+// without the sort arrows, for the printed table
 const BUNDLES_COLUMN_LABELS = {
     rank: 'Rank',
     products: 'Products',
@@ -45,12 +32,7 @@ const BUNDLES_COLUMN_LABELS = {
     conviction: 'Conviction'
 };
 
-// "Recalculating market insights..." badge - shown while any rule in the
-// last-loaded payload is still Rules.is_approximate (stale pending the
-// background remine a soft-delete kicks off - see
-// services/persistence.prune_rules_for_product / remine_rules). Polls a
-// small dedicated endpoint rather than re-fetching the full /api/analytics
-// payload on every tick.
+// polls a small status endpoint while any rule is approximate (remine pending)
 const RECALC_POLL_INTERVAL_MS = 4000;
 let recalcPollTimer = null;
 
@@ -143,10 +125,6 @@ function stopRecalcPolling() {
     }
 }
 
-// Re-renders whatever the user currently has open, with the now-final
-// numbers loadAnalyticsData() just fetched - both the Browse drill-down
-// level in view and, if the Product Bundles tab is the active one, its
-// table too (the two views can be open independently of each other).
 function rerenderCurrentView() {
     if (currentLevel === 1) {
         renderCategoryGrid();
@@ -224,9 +202,7 @@ function wireControls() {
     }
 }
 
-// ====================================
-// SEARCH
-// ====================================
+// --- search ---
 
 function matchingProducts(term) {
     const trimmed = term.trim().toLowerCase();
@@ -271,9 +247,7 @@ function selectSearchResult(productName) {
     showLevel3(productName, null);
 }
 
-// ====================================
-// LEVEL 1: CATEGORY GRID
-// ====================================
+// --- level 1: categories ---
 
 function showLevel1() {
     currentLevel = 1;
@@ -310,9 +284,7 @@ function renderCategoryGrid() {
     });
 }
 
-// ====================================
-// LEVEL 2: CATEGORY -> PRODUCT LIST
-// ====================================
+// --- level 2: products in a category ---
 
 function showLevel2(categoryName) {
     currentLevel = 2;
@@ -328,9 +300,7 @@ function showLevel2(categoryName) {
     renderLevel2List();
 }
 
-// currentCategory's products, filtered by the search box and sorted - the
-// single source for both renderLevel2List() and the Print Report output, so
-// the printed list can't drift from the one on screen.
+// shared with the print report so both show the same list
 function getLevel2Products() {
     if (!currentCategory) return [];
     const categoryEntry = (analyticsData.categories || []).find(entry => entry.category === currentCategory);
@@ -379,9 +349,7 @@ function renderLevel2List() {
     });
 }
 
-// ====================================
-// LEVEL 3: PRODUCT -> RULE ROWS
-// ====================================
+// --- level 3: rules for a product ---
 
 function showLevel3(productName, cameFromCategory) {
     const entry = productIndex.get(productName);
@@ -406,19 +374,12 @@ function joinWithAnd(names) {
     return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
-// Rendered next to a confidence value whenever its underlying rule was
-// structurally patched (not re-mined) by a product delete's instant prune
-// - see Rules.is_approximate / services/persistence.prune_rules_for_product.
-// A native `title` attribute rather than the .info-tooltip click-modal
-// component, since this specifically calls for a hover tooltip.
 function approximateMarkerHtml(isApproximate) {
     if (!isApproximate) return '';
     return ' <span class="approximate-marker" title="Approximate value. The exact probability is currently being recalculated due to recent catalog updates.">~</span>';
 }
 
-// A product's rule rows sorted by level3SortDirection, and each row's
-// "Frequently Bought Together" label - shared by renderLevel3Rows() and the
-// Print Report output, so both show the same rows in the same order/wording.
+// shared with the print report
 function getLevel3Rows(entry) {
     if (!entry || !entry.rows) return [];
     return entry.rows.slice().sort((a, b) => {
@@ -458,9 +419,6 @@ function renderLevel3Rows(entry) {
         .join('');
 }
 
-// ====================================
-// SHARED
-// ====================================
 
 function setLevelVisibility(level) {
     const level1 = document.getElementById('analyticsLevel1');
@@ -477,9 +435,7 @@ function clearSearchInputKeepingDropdownHidden() {
     hideSearchDropdown();
 }
 
-// ====================================
-// ALL RULES: FLAT PRODUCT BUNDLES TABLE
-// ====================================
+// --- product bundles tab ---
 
 function wireBundlesControls() {
     const tabBrowse = document.getElementById('analyticsTabBrowse');
@@ -522,9 +478,7 @@ function showAnalyticsTab(tab) {
     updateAnalyticsPrintButton();
 }
 
-// The three min-threshold inputs, read the same way the filter always has
-// (blank/unparseable = 0 = no filter). `isSet` lets the printed report say
-// "None" for a blank box instead of "0.000".
+// blank = 0 = no filter. isSet lets the report print "None" for a blank box
 function getBundlesThresholds() {
     const readThreshold = id => {
         const input = document.getElementById(id);
@@ -539,9 +493,7 @@ function getBundlesThresholds() {
     };
 }
 
-// The bundle rows the table shows: threshold-filtered, then sorted by the
-// current column/direction - shared by renderBundlesTable() and the Print
-// Report output.
+// shared with the print report
 function getFilteredBundleRows(thresholds) {
     const limits = thresholds || getBundlesThresholds();
     return bundlesData
@@ -607,18 +559,13 @@ function compareBundleRows(a, b, key, direction) {
     }
     const aValue = a[key];
     const bValue = b[key];
-    // Nulls (e.g. infinite conviction, when confidence is exactly 100%)
-    // always sort last, regardless of direction.
-    // Equal values (including two nulls) fall back to the composite rank,
-    // so ties keep the backend's tie-breaker order.
+    // nulls (inf conviction) always sort last, ties fall back to rank
     if (aValue === null && bValue === null) return a.rank - b.rank;
     if (aValue === null) return 1;
     if (bValue === null) return -1;
     return directionFactor * (aValue - bValue) || a.rank - b.rank;
 }
 
-// Leverage and Score use 4 decimals so the small differences that drive
-// the ranking's tie-breakers are visible.
 function formatBundleMetric(value, decimals = 3) {
     if (value === null || value === undefined) return '∞';
     return Number(value).toFixed(decimals);
@@ -636,27 +583,17 @@ function updateBundlesSortIndicators() {
     });
 }
 
-// ====================================
-// PRINT REPORT
-// ====================================
+// --- print report ---
 
-/* Prints only the table currently on screen, honoring every control that's
-   shaping it (tab, drill-down level, search, sort, thresholds). The rows
-   come from the same getLevel2Products / getLevel3Rows / getFilteredBundleRows
-   helpers the render functions use, so the printout can't drift from the
-   screen. Shared building blocks (header, table, print/cleanup) live in
-   script.js. */
+// prints the table currently on screen, with the current filters and sort
 
 const PRINT_NO_ROWS_REASON = 'No rows match the current filters.';
 const APPROXIMATE_FOOTNOTE = '~ Approximate value, currently being recalculated';
 
-// Called at the top of every render function (and on tab switches): by the
-// time a render runs, the state it depends on is already final, and those
-// are the only points where the printable table can change.
+// called from every render and tab switch
 function updateAnalyticsPrintButton() {
     const button = document.getElementById('printReportBtn');
-    // Browse Level 1 is a category grid, not a table - there's never
-    // anything to print there, so the button is hidden rather than disabled.
+    // level 1 is a grid, nothing to print
     const isBrowseLevel1 = currentAnalyticsTab === 'browse' && currentLevel === 1;
     if (button && button.parentElement) button.parentElement.hidden = isBrowseLevel1;
     if (isBrowseLevel1) return;
@@ -673,11 +610,7 @@ function formatThresholdValue(threshold) {
     return threshold.isSet ? threshold.value.toFixed(3) : 'None';
 }
 
-// Describes exactly what the Print Report button would print for the view
-// on screen - {viewName, sectionTitle, filterLines, columns, align, rows,
-// hasApproximate, landscape} - or {disabledReason} when there's no table to
-// print. An empty table disables the button rather than printing an empty
-// page (one consistent rule for every view).
+// what the print button would print, or {disabledReason} when there's no table
 function buildAnalyticsPrintableView() {
     if (currentAnalyticsTab === 'bundles') {
         if (!bundlesData || bundlesData.length === 0) {
@@ -709,8 +642,6 @@ function buildAnalyticsPrintableView() {
                 formatBundleMetric(rule.score, 4)
             ]),
             hasApproximate: rules.some(rule => rule.isApproximate),
-            // Eight columns with a free-text Products column read better with
-            // the extra width.
             landscape: true
         };
     }

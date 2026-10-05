@@ -1,32 +1,18 @@
-/* ====================================
-   KEAT DECISION SUPPORT SYSTEM
-   Global JavaScript Functions
-   ==================================== */
+// Shared across all pages
 
-// ====================================
-// LOGIN FUNCTIONALITY
-// ====================================
+// --- login ---
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if on login page
     if (document.getElementById('loginForm')) {
         handleLoginPage();
     } else {
-        // The server already redirects anonymous visitors away from
-        // protected pages (see services/auth.enforce_login); the two guards
-        // below cover a page that's already open when the session ends.
         initializeCommonFunctionality();
     }
 });
 
-// ====================================
-// SESSION GUARDS
-// ====================================
+// --- session ---
 
-// Any API call answered with 401 means the session has ended (signed out in
-// another tab, server restarted, account removed) - send the user back to
-// the login page instead of leaving a page that silently fails to load.
-// The login request itself is exempt: a 401 there is just a wrong password.
+// any 401 (except the login call itself) sends the user back to the login page
 (function guardApiSessions() {
     const nativeFetch = window.fetch.bind(window);
     window.fetch = async function(input, init) {
@@ -39,8 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 })();
 
-// A page restored from the browser's back/forward cache skips the server's
-// login check - reload it so the server decides whether it's still allowed.
+// back/forward cache skips the server's login check, so reload
 window.addEventListener('pageshow', function(event) {
     if (event.persisted && !document.getElementById('loginForm')) {
         window.location.reload();
@@ -49,9 +34,7 @@ window.addEventListener('pageshow', function(event) {
 
 function handleLoginPage() {
     const loginForm = document.getElementById('loginForm');
-    // The form's field is labeled/id "email", but the account schema is
-    // username-based (single-admin app) - its value is sent as the
-    // username, which in practice will usually look like an email address.
+    // the "email" field is really the username
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const rememberMe = document.getElementById('rememberMe');
@@ -59,7 +42,6 @@ function handleLoginPage() {
 
     wirePasswordToggle(passwordInput, document.getElementById('passwordToggle'));
 
-    // Pre-fill if remembered
     if (localStorage.getItem('rememberEmail')) {
         emailInput.value = localStorage.getItem('rememberEmail');
         rememberMe.checked = true;
@@ -87,7 +69,6 @@ function handleLoginPage() {
 
             errorMessage.classList.remove('show');
 
-            // Save remember me preference
             if (rememberMe.checked) {
                 localStorage.setItem('rememberEmail', username);
             } else {
@@ -102,9 +83,7 @@ function handleLoginPage() {
     });
 }
 
-// Eye button inside the password box: switches it between hidden and
-// visible text. Always switched back to hidden before the form submits, so
-// the browser never saves or autofills it as a plain text field.
+// set back to hidden before submit so the browser doesn't save it as plain text
 function wirePasswordToggle(input, button) {
     if (!input || !button) return;
     const icon = button.querySelector('i');
@@ -128,9 +107,7 @@ function wirePasswordToggle(input, button) {
     if (input.form) input.form.addEventListener('submit', () => setVisible(false));
 }
 
-// ====================================
-// COMMON FUNCTIONALITY FOR ALL PAGES
-// ====================================
+// --- common ---
 
 function initializeCommonFunctionality() {
     initializeNavigation();
@@ -141,15 +118,9 @@ function initializeCommonFunctionality() {
     initializeInfoTooltips();
 }
 
-// ====================================
-// INFO TOOLTIPS (ⓘ icons - dashboard stat cards, analytics stat boxes, etc.)
-// ====================================
+// --- info tooltips ---
 
-// Clicking a ⓘ icon opens a shared popup modal with its explanation,
-// instead of a hover bubble - works identically on desktop and touch, and
-// isn't at risk of being clipped near the edge of a scrollable page.
-// Shared here (not page-specific JS) since .info-tooltip is used on more
-// than one page.
+// ⓘ icons open a popup instead of a hover bubble, works on touch too
 function initializeInfoTooltips() {
     document.querySelectorAll('.info-tooltip').forEach(tooltip => {
         tooltip.addEventListener('click', function(event) {
@@ -187,9 +158,7 @@ function openInfoPopup(tooltipEl) {
     const bubble = tooltipEl.querySelector('.info-tooltip-bubble');
     const text = bubble ? bubble.textContent.trim() : '';
 
-    // Derives the popup's title from the label the icon sits inside (e.g.
-    // "Average Number of Products per Transaction", "Product Combos
-    // Found") rather than hardcoding one per icon.
+    // title comes from the label the icon sits in
     const labelContainer = tooltipEl.closest('.stat-card-title, .stat-box-label, label');
     let title = 'What does this mean?';
     if (labelContainer) {
@@ -209,7 +178,6 @@ function openInfoPopup(tooltipEl) {
 }
 
 function initializeNavigation() {
-    // Set active nav based on current page
     const currentPage = getCurrentPage();
     const navLinks = document.querySelectorAll('.sidebar-nav a');
 
@@ -246,7 +214,6 @@ function initializeHamburger() {
         sidebar.classList.toggle('active');
     });
 
-    // Close sidebar when clicking outside
     document.addEventListener('click', function(event) {
         if (!event.target.closest('.sidebar') && !event.target.closest('.hamburger')) {
             sidebar.classList.remove('active');
@@ -298,12 +265,8 @@ function closeHelpModal() {
     }
 }
 
-// ====================================
-// USER HEADER (session info + account settings gear)
-// ====================================
+// --- user header / settings ---
 
-// Cached from the last /api/session load, so opening the settings modal can
-// pre-fill the username field without a second round trip.
 let currentSessionUsername = '';
 
 async function initializeUserHeader() {
@@ -313,8 +276,6 @@ async function initializeUserHeader() {
         const session = await response.json();
         currentSessionUsername = session.username || '';
         renderUserHeader(session);
-        // Every authenticated session can manage its own credentials now -
-        // there's no separate "manage any account" tier anymore.
         showSettingsGear();
     } catch (error) {
         console.warn('Unable to load session info.', error);
@@ -385,9 +346,6 @@ function ensureSettingsModal() {
     }
 }
 
-// No "pick an account" step anymore - every session can only ever reach its
-// own credentials (see PUT /api/users/me), so the form just pre-fills with
-// the session's own username.
 function openSettingsModal() {
     ensureSettingsModal();
 
@@ -446,9 +404,7 @@ async function saveSettingsAccount() {
     }
 }
 
-// ====================================
-// MODAL UTILITIES
-// ====================================
+// --- modals ---
 
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -464,39 +420,30 @@ function openModal(modalId) {
     }
 }
 
-// Close modal when clicking outside
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('modal-overlay')) {
         event.target.classList.remove('active');
     }
 });
 
-// ====================================
-// NAVIGATION HELPERS
-// ====================================
 
 function showNotification(message, type = 'success') {
-    // Remove existing notification
     const existingNotification = document.querySelector('.notification');
     if (existingNotification) {
         existingNotification.remove();
     }
 
-    // Create notification
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
 
-    // Remove after 3 seconds
     setTimeout(() => {
         notification.remove();
     }, 3000);
 }
 
-// ====================================
-// UTILITY FUNCTIONS
-// ====================================
+// --- formatting ---
 
 function formatCurrency(value) {
     return '₱' + parseFloat(value).toLocaleString('en-US', {
@@ -512,20 +459,11 @@ function formatNumber(value) {
     });
 }
 
-// ====================================
-// PRINT REPORTS (Dashboard + Analytics "Print Report" buttons)
-// ====================================
+// --- print reports ---
 
-/* Both report pages build their printable output as an HTML string into the
-   hidden #printReport container and print that, instead of printing the live
-   page: the live page is a fixed-height, overflow-hidden app shell full of
-   canvases and controls, which doesn't paginate. The @media print rules in
-   style.css only swap the app out for #printReport while <body> has the
-   .printing-report class, so a plain Ctrl+P still behaves as it did before. */
+// reports render into the hidden #printReport and print that, the app shell doesn't paginate
 
-// Cleanup for a report that's still on the page (its afterprint hasn't fired
-// yet) - run first if another print starts, so the older report's afterprint
-// listener can't wipe out the newer one.
+// cleanup for a report whose afterprint hasn't fired yet
 let pendingReportCleanup = null;
 
 function escapeHtml(value) {
@@ -550,10 +488,7 @@ function formatReportTimestamp(date) {
     });
 }
 
-// `filterLines` (and options.metaLines) are [{label, value}] pairs, rendered
-// as "Label: value". options.note is an optional one-line remark under the
-// filters. The logo URL comes from #printReport's data-logo-src (set with
-// url_for() in the template) so this file doesn't hardcode the static path.
+// filterLines / options.metaLines: [{label, value}]. logo url comes from #printReport's data-logo-src
 function buildReportHeader(title, filterLines, options) {
     const settings = options || {};
     const container = document.getElementById('printReport');
@@ -592,12 +527,7 @@ function renderReportLabelList(lines) {
         .join('')}</ul>`;
 }
 
-// columns: header labels; rows: arrays of cell values (already formatted
-// for display - every value is escaped here); align: per-column 'left'
-// (default) / 'right' / 'center'; footerRow: an optional bold totals row.
-// The totals row is rendered as the last <tbody> row, not a <tfoot>, because
-// browsers repeat <tfoot> at the bottom of every printed page - a "Total"
-// line under each page's partial rows would read as a subtotal.
+// totals go in the last tbody row, a tfoot would repeat on every printed page
 function renderReportTable(config) {
     const columns = config.columns || [];
     const rows = config.rows || [];
@@ -625,8 +555,7 @@ function renderReportTable(config) {
     `;
 }
 
-// bodyHtml must already be safe HTML (built by renderReportTable/
-// renderReportMessage or escaped by the caller).
+// bodyHtml must already be escaped
 function renderReportSection(title, bodyHtml, className) {
     return `
         <section class="report-section${className ? ' ' + className : ''}">
@@ -640,9 +569,7 @@ function renderReportMessage(text, className) {
     return `<p class="${className || 'report-message'}">${escapeHtml(text)}</p>`;
 }
 
-// Enables/disables a Print Report button. The reason goes on the button's
-// wrapper too, since some browsers don't show a disabled button's own
-// tooltip (disabled elements don't receive hover events there).
+// reason also goes on the wrapper, some browsers don't show a disabled button's tooltip
 function setPrintButtonState(button, enabled, disabledReason) {
     if (!button) return;
     const title = enabled ? 'Print this report' : (disabledReason || 'Nothing to print.');
@@ -651,8 +578,7 @@ function setPrintButtonState(button, enabled, disabledReason) {
     if (button.parentElement) button.parentElement.title = title;
 }
 
-// Waits (briefly) for the report's images - the header logo - to load, so the
-// print snapshot isn't taken with a blank logo on a cold cache.
+// wait briefly for the logo so it isn't blank in the print
 function waitForReportImages(container, timeoutMs) {
     const pending = Array.from(container.querySelectorAll('img'))
         .filter(img => !img.complete)
@@ -667,10 +593,6 @@ function waitForReportImages(container, timeoutMs) {
     ]);
 }
 
-// options.landscape adds body.print-landscape, which switches #printReport
-// onto the landscape named page (see the PRINT section of style.css). Both
-// body classes and the report HTML are removed again on afterprint, so the
-// on-screen page is left exactly as it was.
 function printReportHtml(html, options) {
     const container = document.getElementById('printReport');
     if (!container) return;
@@ -694,8 +616,6 @@ function printReportHtml(html, options) {
     waitForReportImages(container, 2000).then(() => window.print());
 }
 
-// Populated from the database on each page's load (see products.js) -
-// renders a blank/empty state until then.
 window.mockData = {
     products: []
 };

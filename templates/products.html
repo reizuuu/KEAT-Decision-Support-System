@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keat - Decision Support System | Products</title>
 
-    <!-- Favicons -->
     <link rel="icon" href="{{ url_for('static', filename='assets/favicons/favicon.ico') }}" sizes="any">
     <link rel="icon" type="image/png" sizes="48x48" href="{{ url_for('static', filename='assets/favicons/favicon-48x48.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicons/favicon-32x32.png') }}">
@@ -14,13 +13,8 @@
     <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
     <meta name="theme-color" content="#2c1e1d">
 
-    <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
-
-    <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -62,9 +56,7 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Header -->
             <header class="page-header">
                 <button class="hamburger" id="hamburger" type="button" aria-label="Open menu">
                     <i class="fas fa-bars"></i>
@@ -82,7 +74,6 @@
                 </div>
             </header>
 
-            <!-- Page Content -->
             <div class="page-content">
                 <!-- Products Header -->
                 <div class="products-header">
@@ -121,9 +112,6 @@
                                 <td colspan="4" class="table-empty-message">No products yet — upload a file to get started.</td>
                             </tr>
                         </tbody>
-                        <!-- Product Alias (POS/receipt-style short name) is shown as a
-                             muted line under the product name in each row, rendered
-                             by renderProductTable() in products.js - see requirement 1. -->
                     </table>
                 </div>
             </div>
@@ -248,7 +236,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/products.js') }}"></script>
 </body>
