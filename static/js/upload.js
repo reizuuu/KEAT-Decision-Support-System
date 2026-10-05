@@ -22,69 +22,69 @@ function initializeUploadPage() {
 function initializeDragDrop() {
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
-    
+
     if (!dropZone) return;
-    
+
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
     });
-    
+
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
     }
-    
+
     // Highlight drop zone when item is dragged over it
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, highlight, false);
     });
-    
+
     ['dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, unhighlight, false);
     });
-    
+
     function highlight(e) {
         dropZone.style.backgroundColor = '#F0EAE0';
         dropZone.style.borderColor = '#8B7355';
     }
-    
+
     function unhighlight(e) {
         dropZone.style.backgroundColor = '';
         dropZone.style.borderColor = '';
     }
-    
+
     // Handle dropped files
     dropZone.addEventListener('drop', handleDrop, false);
-    
+
     function handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        
+
         handleFiles(files);
     }
 }
 
 function handleFiles(files) {
     const fileList = Array.from(files);
-    
+
     if (fileList.length === 0) return;
-    
+
     const file = fileList[0];
-    
+
     // Validate file type
     if (!isValidFileType(file)) {
         showNotification('Invalid file type. Please upload CSV or XLSX file.', 'error');
         return;
     }
-    
+
     // Validate file size (50 MB)
     const maxSize = 50 * 1024 * 1024; // 50 MB
     if (file.size > maxSize) {
         showNotification('File size exceeds 50 MB limit.', 'error');
         return;
     }
-    
+
     selectedFile = file;
     updateFileSelected();
 }
@@ -92,12 +92,12 @@ function handleFiles(files) {
 function isValidFileType(file) {
     const validTypes = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
     const validExtensions = ['.csv', '.xlsx'];
-    
+
     // Check MIME type
     if (validTypes.includes(file.type)) {
         return true;
     }
-    
+
     // Check file extension
     const fileName = file.name.toLowerCase();
     return validExtensions.some(ext => fileName.endsWith(ext));
@@ -119,12 +119,12 @@ function updateFileSelected() {
 function initializeBrowseButton() {
     const browseBtn = document.getElementById('browseBtn');
     const fileInput = document.getElementById('fileInput');
-    
+
     if (browseBtn && fileInput) {
         browseBtn.addEventListener('click', function() {
             fileInput.click();
         });
-        
+
         fileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
                 handleFiles(this.files);
@@ -139,7 +139,7 @@ function initializeBrowseButton() {
 
 function initializeUploadButton() {
     const uploadBtn = document.getElementById('uploadBtn');
-    
+
     if (uploadBtn) {
         uploadBtn.addEventListener('click', function() {
             performUpload();
@@ -152,10 +152,10 @@ function performUpload() {
         showNotification('Please select a file to upload', 'error');
         return;
     }
-    
+
     // Show progress modal
     openModal('uploadProgressModal');
-    
+
     uploadFile();
 }
 
@@ -253,10 +253,10 @@ function escapeHtml(value) {
 
 function closeUploadSuccess() {
     closeModal('uploadSuccessModal');
-    
+
     // Reset progress
     document.getElementById('progressBar').style.width = '0%';
     document.getElementById('uploadProgress').textContent = '0%';
-    
+
     showNotification('Upload processed successfully.');
 }

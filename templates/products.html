@@ -13,13 +13,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
     <meta name="theme-color" content="#2c1e1d">
-    
+
     <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -30,7 +30,7 @@
             <div class="sidebar-logo">
                 <div class="logo">keat</div>
             </div>
-            
+
             <nav class="sidebar-nav" id="sidebarNav">
                 <a href="{{ url_for('dashboard') }}" title="Dashboard">
                     <i class="fas fa-chart-line"></i>
@@ -49,7 +49,7 @@
                     <span>Upload</span>
                 </a>
             </nav>
-            
+
             <div class="sidebar-footer">
                 <a href="#" id="signOutBtn" title="Sign Out">
                     <i class="fas fa-sign-out-alt"></i>
@@ -61,7 +61,7 @@
                 </a>
             </div>
         </aside>
-        
+
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
@@ -81,7 +81,7 @@
                     </button>
                 </div>
             </header>
-            
+
             <!-- Page Content -->
             <div class="page-content">
                 <!-- Products Header -->
@@ -90,9 +90,9 @@
                         <strong id="productCount">0</strong> Products
                     </div>
                     <div class="products-toolbar">
-                        <input 
-                            type="text" 
-                            id="productSearch" 
+                        <input
+                            type="text"
+                            id="productSearch"
                             placeholder="Search products..."
                         >
                         <select id="categoryFilter" class="category-filter">
@@ -104,7 +104,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Products Table -->
                 <div class="table-container">
                     <table>
@@ -129,7 +129,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Product Modal -->
     <div class="modal-overlay" id="productModal">
         <div class="modal">
@@ -195,7 +195,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Confirm Delete Modal -->
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal">
@@ -209,7 +209,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Sign Out Confirmation Modal -->
     <div class="modal-overlay" id="signOutConfirmModal">
         <div class="modal">
@@ -232,7 +232,7 @@
                 <div class="help-content">
                     <h3>Products Management</h3>
                     <p>Manage your café's product catalog efficiently.</p>
-                    
+
                     <h3>Actions</h3>
                     <ul>
                         <li><strong>Add Product:</strong> Click "Add Product" to create a new item</li>
@@ -247,7 +247,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/products.js') }}"></script>

@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+# third-party and binary files are stored as-is
+static/vendors/** -text
+static/assets/** -text
+instance/** -text
+*.min.* -text

@@ -212,7 +212,7 @@ function initializeNavigation() {
     // Set active nav based on current page
     const currentPage = getCurrentPage();
     const navLinks = document.querySelectorAll('.sidebar-nav a');
-    
+
     navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href');
@@ -239,13 +239,13 @@ function getCurrentPage() {
 function initializeHamburger() {
     const hamburger = document.getElementById('hamburger');
     if (!hamburger) return;
-    
+
     const sidebar = document.getElementById('sidebar');
-    
+
     hamburger.addEventListener('click', function() {
         sidebar.classList.toggle('active');
     });
-    
+
     // Close sidebar when clicking outside
     document.addEventListener('click', function(event) {
         if (!event.target.closest('.sidebar') && !event.target.closest('.hamburger')) {
@@ -280,9 +280,9 @@ async function confirmSignOut() {
 function initializeHelpModal() {
     const helpBtns = document.querySelectorAll('#helpBtn');
     const helpModal = document.getElementById('helpModal');
-    
+
     if (!helpModal) return;
-    
+
     helpBtns.forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -481,13 +481,13 @@ function showNotification(message, type = 'success') {
     if (existingNotification) {
         existingNotification.remove();
     }
-    
+
     // Create notification
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
-    
+
     // Remove after 3 seconds
     setTimeout(() => {
         notification.remove();

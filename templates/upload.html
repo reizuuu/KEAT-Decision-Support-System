@@ -13,13 +13,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
     <meta name="theme-color" content="#2c1e1d">
-    
+
     <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -30,7 +30,7 @@
             <div class="sidebar-logo">
                 <div class="logo">keat</div>
             </div>
-            
+
             <nav class="sidebar-nav" id="sidebarNav">
                 <a href="{{ url_for('dashboard') }}" title="Dashboard">
                     <i class="fas fa-chart-line"></i>
@@ -49,7 +49,7 @@
                     <span>Upload</span>
                 </a>
             </nav>
-            
+
             <div class="sidebar-footer">
                 <a href="#" id="signOutBtn" title="Sign Out">
                     <i class="fas fa-sign-out-alt"></i>
@@ -61,7 +61,7 @@
                 </a>
             </div>
         </aside>
-        
+
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
@@ -81,7 +81,7 @@
                     </button>
                 </div>
             </header>
-            
+
             <!-- Page Content -->
             <div class="page-content">
                 <div class="upload-container">
@@ -92,15 +92,15 @@
                             <div class="upload-text">Drag your file here</div>
                             <div class="upload-divider">or</div>
                             <button type="button" class="btn-primary" id="browseBtn">Browse</button>
-                            <input 
-                                type="file" 
-                                id="fileInput" 
+                            <input
+                                type="file"
+                                id="fileInput"
                                 accept=".csv,.xlsx"
                                 style="display: none;"
                             >
                             <div id="fileSelected" style="margin-top: 12px; font-size: 12px; color: #666;"></div>
                         </div>
-                        
+
                         <!-- Right Section: Info & Requirements -->
                         <div class="upload-right">
                             <div class="upload-info-box">
@@ -108,7 +108,7 @@
                                 <div class="upload-info-text">
                                     Support for <strong>CSV</strong> and <strong>XLSX</strong> file. Maximum of <strong>50 MB</strong>.
                                 </div>
-                                
+
                                 <div class="upload-info-title" style="margin-top: 16px;">Required Fields:</div>
                                 <div class="required-fields">
                                     <ul class="required-fields-list">
@@ -129,7 +129,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            
+
                             <button type="button" class="btn-primary" id="uploadBtn" style="width: 100%; margin-top: auto;">
                                 Upload and Process
                             </button>
@@ -139,7 +139,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Upload Progress Modal -->
     <div class="modal-overlay" id="uploadProgressModal">
         <div class="modal">
@@ -154,7 +154,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Upload Success Modal -->
     <div class="modal-overlay" id="uploadSuccessModal">
         <div class="modal">
@@ -170,7 +170,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Sign Out Confirmation Modal -->
     <div class="modal-overlay" id="signOutConfirmModal">
         <div class="modal">
@@ -193,20 +193,20 @@
                 <div class="help-content">
                     <h3>File Upload Instructions</h3>
                     <p>Upload transaction data to train the decision support system.</p>
-                    
+
                     <h3>Supported Formats</h3>
                     <ul>
                         <li>CSV (.csv)</li>
                         <li>Excel (.xlsx)</li>
                     </ul>
-                    
+
                     <h3>Requirements</h3>
                     <ul>
                         <li>Maximum file size: 50 MB</li>
                         <li>All required fields must be present</li>
                         <li>Column names must match the specified fields</li>
                     </ul>
-                    
+
                     <h3>How to Upload</h3>
                     <ol style="margin-left: 20px;">
                         <li>Click "Browse" or drag your file here</li>
@@ -221,7 +221,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/upload.js') }}"></script>

@@ -15,8 +15,8 @@ Process-local by design: this app runs as a single Flask process. Under a
 multi-worker server each worker would only see its own commits.
 """
 
-from collections import OrderedDict
 import threading
+from collections import OrderedDict
 
 from sqlalchemy import event
 from sqlalchemy.orm import Session

@@ -13,13 +13,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicons/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='assets/favicons/site.webmanifest') }}">
     <meta name="theme-color" content="#2c1e1d">
-    
+
     <!-- Fonts (Poppins, Cormorant Garamond) - local copy, works offline -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fonts/fonts.css') }}">
 
     <!-- Font Awesome (show/hide password icon) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='vendors/fontawesome/css/all.min.css') }}">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -30,7 +30,7 @@
             <div class="login-form-wrapper">
                 <h1 class="login-heading">Welcome Back!</h1>
                 <p class="login-subtext">Please enter your details.</p>
-                
+
                 <form class="login-form" id="loginForm">
                     <div class="form-group">
                         <label for="email">Username</label>
@@ -42,7 +42,7 @@
                             required
                         >
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="password">Password</label>
                         <div class="password-field">
@@ -59,27 +59,27 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="error-message" id="errorMessage"></div>
-                    
+
                     <div class="login-footer">
                         <div class="checkbox-group">
                             <input type="checkbox" id="rememberMe" name="rememberMe">
                             <label for="rememberMe" style="margin: 0;">Remember me</label>
                         </div>
                     </div>
-                    
+
                     <button type="submit" class="btn-primary" style="width: 100%;">Sign In</button>
                 </form>
             </div>
         </div>
-        
+
         <!-- Right Section: Image & Branding -->
         <div class="login-right">
             <img src="{{ url_for('static', filename='assets/keat_logo.jpg') }}" alt="Keat Café" class="login-image">
         </div>
     </div>
-    
+
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
