@@ -1422,6 +1422,13 @@ tr:hover {
     color: #666;
 }
 
+.download-template-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
 .required-fields {
     background-color: var(--text-light);
     border: var(--border-thin);

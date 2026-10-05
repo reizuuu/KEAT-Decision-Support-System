@@ -1,7 +1,10 @@
 import hashlib
 from datetime import datetime
+from io import BytesIO
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, current_app, jsonify, request, send_file
+from openpyxl import Workbook
+from openpyxl.styles import Font
 
 from models import UploadLog, db
 from services.ingest import (
@@ -17,6 +20,30 @@ from services.rules import start_background_remine
 
 
 upload_bp = Blueprint("upload", __name__)
+
+TEMPLATE_HEADERS = ["Timestamp", "Receipt ID", "Date", "Product Name", "Category", "Quantity", "Price", "Total"]
+
+
+@upload_bp.get("/api/upload/template")
+def download_template():
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Transactions"
+    sheet.append(TEMPLATE_HEADERS)
+    for cell in sheet[1]:
+        cell.font = Font(bold=True)
+        sheet.column_dimensions[cell.column_letter].width = max(14, len(cell.value) + 4)
+    sheet.freeze_panes = "A2"
+
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        as_attachment=True,
+        download_name="keat_upload_template.xlsx",
+    )
 
 
 @upload_bp.post("/api/upload")
