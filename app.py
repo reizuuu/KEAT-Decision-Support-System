@@ -14,7 +14,7 @@ from routes.upload import upload_bp
 from routes.users import users_bp
 from services.auth import current_user, enforce_login, prevent_caching
 from services.migrations import run_startup_migrations
-from services.persistence import seed_master_catalog_if_empty
+from services.catalog import seed_master_catalog_if_empty
 
 
 def create_app():

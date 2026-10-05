@@ -2,12 +2,8 @@ from flask import Blueprint, current_app, jsonify, request
 from sqlalchemy import func
 
 from models import Category, Products, RawTransaction, db
-from services.persistence import (
-    find_product_by_name_or_alias,
-    get_or_create_category,
-    prune_rules_for_product,
-    start_background_remine,
-)
+from services.catalog import find_product_by_name_or_alias, get_or_create_category
+from services.rules import prune_rules_for_product, start_background_remine
 from services.text import to_title_case
 
 

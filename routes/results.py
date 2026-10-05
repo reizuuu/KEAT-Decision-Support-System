@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 from models import Rules
 from services.aggregation import build_dashboard_payload
 from services.cache import get_or_build
-from services.persistence import (
+from services.queries import (
     build_analytics_browse_payload,
     build_rule_bundles_payload,
     build_transactions_dataframe,
@@ -25,12 +25,12 @@ def get_results():
     products = sorted(request.args.getlist("product"))
 
     def build():
-        dashboard_dataframe = build_transactions_dataframe(
+        df = build_transactions_dataframe(
             start_date=start_date, end_date=end_date, categories=categories, products=products
         )
-        if dashboard_dataframe.empty:
+        if df.empty:
             return {"empty": True}
-        return {"dashboard": build_dashboard_payload(dashboard_dataframe)}
+        return {"dashboard": build_dashboard_payload(df)}
 
     cache_key = ("results", start_date, end_date, tuple(categories), tuple(products))
     return jsonify(get_or_build(cache_key, build)), 200

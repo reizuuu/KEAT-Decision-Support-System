@@ -4,16 +4,16 @@ from datetime import datetime
 from flask import Blueprint, current_app, jsonify, request
 
 from models import UploadLog, db
-from services.parsing import MissingColumnsError, read_and_clean_upload
-from services.persistence import (
+from services.ingest import (
     apply_master_pricing,
     attach_product_ids,
     compute_true_receipt_ids,
     drop_existing_rows,
     insert_raw_transactions,
-    start_background_remine,
     upsert_transaction_statistics,
 )
+from services.parsing import MissingColumnsError, read_and_clean_upload
+from services.rules import start_background_remine
 
 
 upload_bp = Blueprint("upload", __name__)
@@ -21,8 +21,8 @@ upload_bp = Blueprint("upload", __name__)
 
 @upload_bp.post("/api/upload")
 def upload_file():
-    uploaded_file = request.files.get("file")
-    if uploaded_file is None or not uploaded_file.filename:
+    file = request.files.get("file")
+    if file is None or not file.filename:
         return jsonify({"error": "Please select a CSV or XLSX file."}), 400
 
     # 1. File-level dedup, before pandas even runs - but only a hard block
@@ -33,16 +33,16 @@ def upload_file():
     # pick up what it missed. Row-level dedup (drop_existing_rows) below
     # independently guarantees this never double-inserts whatever already
     # succeeded, regardless of how many times the same file comes through.
-    raw_bytes = uploaded_file.read()
+    raw_bytes = file.read()
     file_hash = hashlib.sha256(raw_bytes).hexdigest()
     existing_upload_log = UploadLog.query.filter_by(file_hash=file_hash).first()
     if existing_upload_log is not None and not existing_upload_log.had_unmatched_rows:
         return jsonify({"error": "This file has already been uploaded."}), 400
-    uploaded_file.stream.seek(0)
+    file.stream.seek(0)
 
     # 2. Read & clean via the existing pandas pipeline.
     try:
-        dataframe, rows_dropped = read_and_clean_upload(uploaded_file)
+        dataframe, rows_dropped = read_and_clean_upload(file)
     except MissingColumnsError as exc:
         return jsonify({"error": str(exc), "missingColumns": exc.columns}), 400
     except ValueError as exc:

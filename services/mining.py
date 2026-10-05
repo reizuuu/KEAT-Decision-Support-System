@@ -40,9 +40,9 @@ def compute_rules(dataframe):
 
     encoder = TransactionEncoder()
     encoded = encoder.fit(transactions).transform(transactions)
-    encoded_dataframe = pd.DataFrame(encoded, columns=encoder.columns_)
+    encoded_df = pd.DataFrame(encoded, columns=encoder.columns_)
     itemsets = fpgrowth(
-        encoded_dataframe,
+        encoded_df,
         min_support=MIN_SUPPORT,
         use_colnames=True,
     )
